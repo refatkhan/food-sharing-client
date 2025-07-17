@@ -4,21 +4,21 @@ import { AuthContext } from '../provider/AuthProvider';
 
 const Navbar = () => {
     const { logOut, user } = useContext(AuthContext);
+    console.log(user);
     const [theme, setTheme] = useState(
         localStorage.getItem("theme") === "light" ? "light" : "dark"
     );
-
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme");
         setTheme(savedTheme);
         document.querySelector("html").setAttribute("data-theme", savedTheme);
     }, [theme]);
 
-    const handleThemeChange = (e) => {
-        const newTheme = e.target.checked ? "dark" : "light";
-        setTheme(newTheme);
-        localStorage.setItem("theme", newTheme);
-    };
+    // const handleThemeChange = (e) => {
+    //     const newTheme = e.target.checked ? "dark" : "light";
+    //     setTheme(newTheme);
+    //     localStorage.setItem("theme", newTheme);
+    // };
 
     const handleLogOut = () => {
         logOut();
@@ -33,33 +33,34 @@ const Navbar = () => {
                 }>Home</NavLink>
             </li>
             <li>
-                <NavLink to="/donate-food" className={({ isActive }) =>
+                <NavLink to="/available-foods" className={({ isActive }) =>
                     isActive ? "text-white bg-green-600 px-4 py-2 rounded-lg"
                         : "text-gray-700 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg"
-                }>Donate Food</NavLink>
+                }>Available Food</NavLink>
             </li>
             {user && (
                 <>
                     <li>
-                        <NavLink to="/my-donations" className={({ isActive }) =>
+                        <NavLink to="/add-food" className={({ isActive }) =>
                             isActive ? "text-white bg-green-600 px-4 py-2 rounded-lg"
                                 : "text-gray-700 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg"
-                        }>My Donations</NavLink>
+                        }>Add Foods</NavLink>
                     </li>
                     <li>
-                        <NavLink to="/request-food" className={({ isActive }) =>
+                        <NavLink to="/food-request" className={({ isActive }) =>
                             isActive ? "text-white bg-green-600 px-4 py-2 rounded-lg"
                                 : "text-gray-700 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg"
                         }>Request Food</NavLink>
                     </li>
+                    <li>
+                        <NavLink to="/browse-foods" className={({ isActive }) =>
+                            isActive ? "text-white bg-green-600 px-4 py-2 rounded-lg"
+                                : "text-gray-700 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg"
+                        }>Browse Foods</NavLink>
+                    </li>
                 </>
             )}
-            <li>
-                <NavLink to="/food-requests" className={({ isActive }) =>
-                    isActive ? "text-white bg-green-600 px-4 py-2 rounded-lg"
-                        : "text-gray-700 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg"
-                }>Browse Requests</NavLink>
-            </li>
+
         </>
     );
 
@@ -111,7 +112,7 @@ const Navbar = () => {
                             </div>
                             <button
                                 onClick={handleLogOut}
-                                className="btn btn-sm bg-green-600 text-white hover:bg-green-700 rounded-full"
+                                className="btn btn-md bg-green-600 text-white hover:bg-green-700 rounded-full"
                             >
                                 Log Out
                             </button>
@@ -124,7 +125,7 @@ const Navbar = () => {
                                         ? "bg-green-600 text-white px-4 py-2 rounded-lg"
                                         : "hover:bg-green-600 hover:text-white px-4 py-2 rounded-lg"
                                 }
-                            >Log In</NavLink>
+                            >Sign In</NavLink>
                             <NavLink to="/signup"
                                 className={({ isActive }) =>
                                     isActive
