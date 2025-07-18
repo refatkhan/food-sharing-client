@@ -8,7 +8,15 @@ const AddFood = () => {
         e.preventDefault();
         const form = new FormData(e.target);
         const foodData = Object.fromEntries(form);
+        const now = new Date();
 
+        // Separate fields
+        foodData.date = now.toISOString().split("T")[0]; // "2025-07-18"
+        foodData.time = now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        }); // "06:15 PM"
         axios.post("http://localhost:3000/add-food", foodData)
             .then((res) => {
                 if (res.data.insertedId) {
