@@ -1,14 +1,14 @@
 import axios from "axios";
 import {
-  createUserWithEmailAndPassword,
-  deleteUser,
-  getAuth,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  updateProfile,
+    createUserWithEmailAndPassword,
+    deleteUser,
+    getAuth,
+    GoogleAuthProvider,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut,
+    updateProfile,
 } from 'firebase/auth';
 import React, { createContext, useEffect, useState } from 'react';
 import auth from '../firebase/firebase.config';
@@ -16,74 +16,74 @@ import auth from '../firebase/firebase.config';
 export const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState({}); // ✅
-  const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState({}); // ✅
+    const [loading, setLoading] = useState(true);
 
-  const signUpWithEmail = (email, password) => {
-    setLoading(true);
-    return createUserWithEmailAndPassword(auth, email, password);
-  };
+    const signUpWithEmail = (email, password) => {
+        setLoading(true);
+        return createUserWithEmailAndPassword(auth, email, password);
+    };
 
-  const signInWithEmail = (email, password) => {
-    setLoading(true);
-    return signInWithEmailAndPassword(auth, email, password);
-  };
+    const signInWithEmail = (email, password) => {
+        setLoading(true);
+        return signInWithEmailAndPassword(auth, email, password);
+    };
 
-  const googleSignIn = () => {
-    setLoading(true);
-    const googleProvider = new GoogleAuthProvider();
-    return signInWithPopup(auth, googleProvider);
-  };
+    const googleSignIn = () => {
+        setLoading(true);
+        const googleProvider = new GoogleAuthProvider();
+        return signInWithPopup(auth, googleProvider);
+    };
 
-  const updateUser = (userInfo) => {
-    return updateProfile(auth.currentUser, userInfo);
-  };
+    const updateUser = (userInfo) => {
+        return updateProfile(auth.currentUser, userInfo);
+    };
 
-  const removeUser = (user) => {
-    return deleteUser(user);
-  };
+    const removeUser = (user) => {
+        return deleteUser(user);
+    };
 
-  const logOut = () => {
-    setLoading(true);
-    return signOut(auth);
-  };
+    const logOut = () => {
+        setLoading(true);
+        return signOut(auth);
+    };
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log("✅ Auth changed, user:", currentUser);
-      setUser(currentUser);
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            console.log("✅ Auth changed, user:", currentUser);
+            setUser(currentUser);
 
-      if (currentUser?.accessToken) {
-        axios.get("http://localhost:5000", {
-          headers: {
-            Authorization: `Bearer ${currentUser.accessToken}`
-          }
+            if (currentUser?.accessToken) {
+                axios.get("http://localhost:5000", {
+                    headers: {
+                        Authorization: `Bearer ${currentUser.accessToken}`
+                    }
+                });
+            }
+
+            setLoading(false);
         });
-      }
 
-      setLoading(false);
-    });
+        return () => unsubscribe();
+    }, []);
 
-    return () => unsubscribe();
-  }, []);
+    const authInfo = {
+        user,
+        loading,
+        signUpWithEmail,
+        signInWithEmail,
+        setUser,
+        logOut,
+        googleSignIn,
+        updateUser,
+        removeUser,
+    };
 
-  const authInfo = {
-    user,
-    loading,
-    signUpWithEmail,
-    signInWithEmail,
-    setUser,
-    logOut,
-    googleSignIn,
-    updateUser,
-    removeUser,
-  };
-
-  return (
-    <AuthContext.Provider value={authInfo}>
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+        <AuthContext.Provider value={authInfo}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export default AuthProvider;
