@@ -8,6 +8,8 @@ import ManageMyFoods from '../pages/ManageMyFoods';
 import AddFood from '../pages/AddFood';
 import MyFoodRequest from '../pages/MyFoodRequest';
 import Login from '../pages/Login';
+import FoodDetails from '../pages/FoodDetails';
+import UpdateFood from '../pages/UpdateFood';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -22,8 +24,8 @@ const router = createBrowserRouter([
         element: <Signup />
       },
       {
-        path:"/login",
-        element: <Login/>
+        path: "/login",
+        element: <Login />
       },
       {
         path: "/available-foods",
@@ -42,10 +44,16 @@ const router = createBrowserRouter([
         element: <MyFoodRequest />
       },
       {
-
+        path: "/food-details/:id",
+        element: <FoodDetails />,
+        loader: ({ params }) =>
+          fetch(`http://localhost:3000/food/${params.id}`)
       },
       {
-
+        path: "/update-food/:id",
+        element: <UpdateFood />,
+        loader: ({ params }) =>
+          fetch(`http://localhost:3000/food/${params.id}`)
       },
       {
 
