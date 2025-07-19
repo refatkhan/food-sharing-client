@@ -3,7 +3,7 @@ import { AuthContext } from '../provider/AuthProvider';
 import axios from 'axios';
 
 const AddFood = () => {
-    const  = () => toast.success("add Successful");
+    const notify = () => toast.success("add Successful");
     const { user } = useContext(AuthContext)
     const handleSubmit = (e) => {
         e.preventDefault();
