@@ -4,7 +4,6 @@ import { AuthContext } from '../provider/AuthProvider';
 
 const Navbar = () => {
     const { logOut, user } = useContext(AuthContext);
-    console.log(user);
     const [theme, setTheme] = useState(
         localStorage.getItem("theme") === "light" ? "light" : "dark"
     );
