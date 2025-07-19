@@ -2,74 +2,78 @@ import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../provider/AuthProvider";
 
-const MyFoodRequest = () => {
-  const { user } = useContext(AuthContext); // optionally receive user from context
+const MyRequestedFoods = () => {
+  const { user, loading: loadingUser } = useContext(AuthContext); // Assume loading state exists
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!user?.accessToken || !user?.email) {
+    // Wait for user loading to finish
+    if (loadingUser) return;
+
+    if (!user?.accessToken) {
+      setError("No access token found");
       setLoading(false);
       return;
     }
 
-    const fetchRequests = async () => {
+    const fetchRequestedFoods = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:3000/my-requests?email=${user.email}`,
-          {
-            headers: {
-              Authorization: `Bearer ${user.accessToken}`,
-            },
-          }
-        );
+        const res = await axios.get("http://localhost:3000/requested-foods", {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        });
         setRequests(res.data);
       } catch (err) {
-        setError("Failed to fetch food requests");
-        console.error(err);
+        console.error("❌ Failed to fetch requested foods", err);
+        setError("Failed to load requested foods");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRequests();
-  }, [user]);
+    fetchRequestedFoods();
+  }, [user, loadingUser]);
 
-  if (loading) return <p>Loading your food requests...</p>;
-  if (error) return <p>{error}</p>;
+  if (loadingUser || loading) return <p>Loading your requested foods...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div>
-      <h2>My Food Requests</h2>
+    <div className="relative overflow-x-auto mt-6">
+      <h2 className="text-2xl font-semibold mb-4">My Requested Foods</h2>
       {requests.length === 0 ? (
-        <p>You have no food requests.</p>
+        <p>You haven’t requested any food yet.</p>
       ) : (
-        <table
-          border="1"
-          cellPadding="8"
-          style={{ borderCollapse: "collapse", width: "100%" }}
-        >
-          <thead>
+        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 border border-gray-200">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
             <tr>
-              <th>Food Name</th>
-              <th>Donator Name</th>
-              <th>Pickup Location</th>
-              <th>Expire Date</th>
-              <th>Request Date</th>
+              <th className="px-6 py-3">Food Name</th>
+              <th className="px-6 py-3">Donator</th>
+              <th className="px-6 py-3">Pickup Location</th>
+              <th className="px-6 py-3">Expire Date</th>
+              <th className="px-6 py-3">Request Date</th>
             </tr>
           </thead>
           <tbody>
-            {requests.map((req) => (
-              <tr key={req._id}>
-                <td>{req.requestInfo?.foodName}</td>
-                <td>{req.requestInfo?.donatorName}</td>
-                <td>{req.requestInfo?.pickupLocation}</td>
-                <td>
-                  {new Date(req.requestInfo?.expireDate).toLocaleDateString()}
+            {requests.map((item) => (
+              <tr
+                key={item._id}
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+              >
+                <td className="px-6 py-4">{item.foodName || "N/A"}</td>
+                <td className="px-6 py-4">{item.userName || "N/A"}</td>
+                <td className="px-6 py-4">{item.location || "N/A"}</td>
+                <td className="px-6 py-4">
+                  {item.expireDate
+                    ? new Date(item.expireDate).toLocaleDateString()
+                    : "N/A"}
                 </td>
-                <td>
-                  {new Date(req.requestInfo?.requestDate).toLocaleDateString()}
+                <td className="px-6 py-4">
+                  {item.requestInfo?.requestDate
+                    ? new Date(item.requestInfo.requestDate).toLocaleDateString()
+                    : "N/A"}
                 </td>
               </tr>
             ))}
@@ -80,4 +84,4 @@ const MyFoodRequest = () => {
   );
 };
 
-export default MyFoodRequest;
+export default MyRequestedFoods;
