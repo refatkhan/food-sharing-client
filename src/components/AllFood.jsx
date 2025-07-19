@@ -1,26 +1,38 @@
-import axios from 'axios';
-import React from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { Link } from 'react-router'
+import React from "react";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router";
+
+const fetchFoods = async () => {
+    const res = await axios.get("http://localhost:3000/all-foods");
+    return res.data;
+};
+
 const AllFood = () => {
+    const {
+        data: foods = [],
+        isLoading,
+        isError,
+        error,
+    } = useQuery({
+        queryKey: ["foods"],
+        queryFn: fetchFoods,
+    });
 
-    const [foods, setFoods] = useState([]);
+    if (isLoading) {
+        return <div className="text-center py-10 text-green-600">Loading foods...</div>;
+    }
 
-    useEffect(() => {
-        axios.get("http://localhost:3000/all-foods")
-            .then((res) => {
-                console.log(res);
-                const data = res.data;
-                setFoods(data);
-            })
-            .catch((error) => {
-                console.error("Error fetching food data:", error);
-            });
-    }, []);
+    if (isError) {
+        return (
+            <div className="text-center py-10 text-red-600">
+                Error fetching foods: {error.message}
+            </div>
+        );
+    }
 
     return (
-        <div className='w-12/13 mx-auto py-7'>
+        <div className="w-12/13 mx-auto py-7">
             <div className="flex items-center justify-between space-x-4">
                 <h2 className="text-3xl font-bold text-green-600 flex-shrink-0">
                     All listing Food
@@ -56,13 +68,14 @@ const AllFood = () => {
                         />
                         <button
                             type="submit"
-                            className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            className="text-white absolute right-2.5 bottom-2.5 bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                         >
                             Search
                         </button>
                     </div>
                 </form>
             </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4">
                 {foods.map((food) => {
@@ -81,15 +94,28 @@ const AllFood = () => {
                             className="bg-green-50 dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-2xl transition-shadow duration-300"
                         >
                             <a href="#">
-                                <img className="rounded-t-lg w-full object-cover h-48" src={imageUrl} alt={foodName} />
+                                <img
+                                    className="rounded-t-lg w-full object-cover h-48"
+                                    src={imageUrl}
+                                    alt={foodName}
+                                />
                             </a>
                             <div className="p-8">
                                 <a href="#">
-                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{foodName}</h5>
+                                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                        {foodName}
+                                    </h5>
                                 </a>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400"><strong>Description: </strong>{description}</p>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400"><strong>Food Quantity: </strong> {foodQuantity}</p>
-                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400"><strong>Location:</strong> {location}</p>
+                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    <strong>Description: </strong>
+                                    {description}
+                                </p>
+                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    <strong>Food Quantity: </strong> {foodQuantity}
+                                </p>
+                                <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    <strong>Location:</strong> {location}
+                                </p>
                                 <Link
                                     to={`/food-details/${_id}`}
                                     className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-600 hover:bg-green-800 rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -118,8 +144,6 @@ const AllFood = () => {
             </div>
         </div>
     );
-
-
 };
 
 export default AllFood;
