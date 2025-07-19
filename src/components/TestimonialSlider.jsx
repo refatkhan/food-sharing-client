@@ -55,31 +55,37 @@ export default function TestimonialSlider() {
     }, [length]);
 
     return (
-        <section className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800">
-            <h2 className="text-3xl font-bold text-center mb-6 text-gray-900 dark:text-white">
+        <section className="max-w-7xl mx-auto px-6 py-16 text-gray-800 dark:text-gray-100">
+            <h2 className="text-3xl font-bold text-center mb-12">
                 What Our Users Say
             </h2>
-            <div className="relative min-h-[150px] text-center flex justify-center items-center">
+
+            <div className="relative min-h-[180px] max-w-3xl mx-auto text-center">
                 {testimonials.map((testimonial, index) => (
                     <div
                         key={index}
-                        className={`transition-opacity duration-1000 ease-in-out absolute inset-0 ${index === current ? "opacity-100 relative" : "opacity-0 pointer-events-none"
+                        className={`transition-opacity duration-1000 ease-in-out absolute inset-0 px-6 ${index === current
+                                ? "opacity-100 relative"
+                                : "opacity-0 pointer-events-none"
                             }`}
                     >
-                        <p className="text-lg italic text-gray-700 dark:text-gray-300 mb-4">
+                        <p className="text-xl italic text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
                             “{testimonial.text}”
                         </p>
-                        <p className="text-right font-semibold text-gray-900 dark:text-white">
+                        <p className="text-right font-semibold text-gray-900 dark:text-white text-lg">
                             — {testimonial.author}
                         </p>
                     </div>
                 ))}
             </div>
-            <div className="flex justify-center mt-6 space-x-3">
+
+            <div className="flex justify-center mt-12 space-x-4">
                 {testimonials.map((_, index) => (
                     <button
                         key={index}
-                        className={`w-3 h-3 rounded-full focus:outline-none ${index === current ? "bg-blue-600 dark:bg-blue-400" : "bg-gray-300 dark:bg-gray-600"
+                        className={`w-4 h-4 rounded-full focus:outline-none transition-colors ${index === current
+                                ? "bg-green-600 dark:bg-green-400"
+                                : "bg-gray-300 dark:bg-gray-600"
                             }`}
                         onClick={() => setCurrent(index)}
                         aria-label={`Go to testimonial ${index + 1}`}

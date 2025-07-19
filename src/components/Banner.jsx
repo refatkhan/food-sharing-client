@@ -12,7 +12,7 @@ const Banner = () => {
         <p className="text-lg md:text-xl mb-6 max-w-2xl">
           Join our mission to reduce food waste and help those in need. Share or find freshly cooked meals with your community.
         </p>
-        <a href="/find-food">
+        <a href="/available-foods">
           <button className="bg-[#4CAF50] hover:bg-[#388E3C] text-white font-semibold px-6 py-3 rounded-lg shadow-md">
             Find Food Now
           </button>
