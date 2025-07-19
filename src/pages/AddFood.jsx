@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../provider/AuthProvider';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const AddFood = () => {
     const notify = () => toast.success("add Successful");
