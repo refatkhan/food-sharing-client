@@ -12,7 +12,8 @@ const FeaturedFoods = () => {
     }, []);
     return (
         <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4">
+        <h3>This is feature</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 w-12/13 mx-auto">
                 {featuredFoods.map((food) => {
                     const {
                         _id,
@@ -54,8 +55,8 @@ const FeaturedFoods = () => {
                 })}
             </div>
             {/* Centered See More button outside grid */}
-            <div className="flex justify-center mt-6">
-                <Link to='/all-food'> view details </Link>
+            <div className="flex justify-center my-6">
+                <Link  to='/all-food' class="inline-flex items-center px-4 py-2 text-xl font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ">  See All </Link>
             </div>
         </>
     );

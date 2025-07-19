@@ -22,14 +22,24 @@ const ManageMyFoods = () => {
             });
     }, [user]);
 
-    const handleEdit = (id) => {
-        console.log("Edit food with id:", id);
-        // TODO: Add your edit logic here (e.g., open a modal or navigate to edit page)
-    };
 
     const handleDelete = (id) => {
-        console.log("Delete food with id:", id);
-        // TODO: Add your delete logic here (e.g., show confirmation and delete API call)
+        if (!window.confirm("Are you sure you want to delete this food?")) return;
+
+        axios
+            .delete(`http://localhost:3000/food/${id}`)
+            .then((res) => {
+                if (res.data.deletedCount > 0) {
+                    alert("Food deleted successfully.");
+                    setMyFoods((prevFoods) => prevFoods.filter((food) => food._id !== id));
+                } else {
+                    alert("Failed to delete the food.");
+                }
+            })
+            .catch((err) => {
+                console.error("Error deleting food:", err);
+                alert("Something went wrong while deleting.");
+            });
     };
 
     if (loading) {
@@ -68,8 +78,8 @@ const ManageMyFoods = () => {
                                     <td className="px-6 py-4">{food.location}</td>
                                     <td className="px-6 py-4">{food.foodQuantity}</td>
                                     <td className="px-6 py-4 flex gap-2">
-                                        <Link 
-                                        to={`/update-food/${food._id}`}
+                                        <Link
+                                            to={`/update-food/${food._id}`}
                                             onClick={() => handleEdit(food._id)}
                                             className="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700"
                                         >
