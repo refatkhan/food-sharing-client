@@ -3,6 +3,7 @@ import { AuthContext } from '../provider/AuthProvider';
 import axios from 'axios';
 
 const AddFood = () => {
+    const  = () => toast.success("add Successful");
     const { user } = useContext(AuthContext)
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -20,7 +21,7 @@ const AddFood = () => {
         axios.post("https://food-server-sooty.vercel.app/add-food", foodData)
             .then((res) => {
                 if (res.data.insertedId) {
-                    console.log("Food added successfully");
+                    notify()
                 }
             })
             .catch((err) => {
