@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 
 const fetchFoods = async () => {
-    const res = await axios.get("https:/food-server-sooty.vercel.app/all-foods");
+    const res = await axios.get("https://food-server-sooty.vercel.app/all-foods");
     return res.data;
 };
 

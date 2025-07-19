@@ -17,7 +17,7 @@ const AddFood = () => {
             minute: '2-digit',
             hour12: true
         }); // "06:15 PM"
-        axios.post("https:/food-server-sooty.vercel.app/add-food", foodData)
+        axios.post("https://food-server-sooty.vercel.app/add-food", foodData)
             .then((res) => {
                 if (res.data.insertedId) {
                     console.log("Food added successfully");

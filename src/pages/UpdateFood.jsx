@@ -28,7 +28,7 @@ const UpdateFood = () => {
         const form = new FormData(e.target);
         const data = Object.fromEntries(form);
 
-        fetch(`https:/food-server-sooty.vercel.app/food/${_id}`, {
+        fetch(`https://food-server-sooty.vercel.app/food/${_id}`, {
             method: "PUT",
             headers: {
                 "content-type": "application/json",

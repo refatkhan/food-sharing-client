@@ -16,7 +16,7 @@ import auth from '../firebase/firebase.config';
 export const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState({}); // ✅
+    const [user, setUser] = useState([]); // ✅
     const [loading, setLoading] = useState(true);
 
     const signUpWithEmail = (email, password) => {
