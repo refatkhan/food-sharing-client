@@ -2,21 +2,24 @@ import React, { use } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router';
 import { AuthContext } from '../provider/AuthProvider';
 import { FcGoogle } from "react-icons/fc";
+import { toast } from 'react-toastify';
 
 const SignUp = () => {
     const { signUpWithEmail, updateProfileInfo, googleSignIn } = use(AuthContext);
     const location = useLocation();
     const navigate = useNavigate();
+    const notify = () => toast.success("Log In Successful");
 
     const handleRegister = (e) => {
         e.preventDefault();
-        const name = e.target.name.value;
+        const displayName = e.target.displayName.value;
         const email = e.target.email.value;
-        const photo = e.target.photo.value;
+        const photoURL = e.target.photoURL.value;
         const password = e.target.password.value;
-        
-        signUpWithEmail(email, password).then(() => updateProfileInfo(name, photo));
+
+        signUpWithEmail(email, password).then(() => updateProfileInfo(displayName, photoURL));
         if (signUpWithEmail) {
+            notify();
             navigate(location?.state || "/");
         }
     };
@@ -57,7 +60,7 @@ const SignUp = () => {
                         </label>
                         <input
                             type="text"
-                            name="name"
+                            name="displayName"
                             className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-green-400"
                             placeholder="Your Name"
                             required
@@ -95,7 +98,7 @@ const SignUp = () => {
                         </label>
                         <input
                             type="text"
-                            name="photo"
+                            name="photoURL"
                             className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-green-400"
                             placeholder="https://photo-url.com"
                         />

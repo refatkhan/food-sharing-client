@@ -10,6 +10,7 @@ import MyFoodRequest from '../pages/MyFoodRequest';
 import Login from '../pages/Login';
 import FoodDetails from '../pages/FoodDetails';
 import UpdateFood from '../pages/UpdateFood';
+import AllFood from '../components/AllFood';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -56,7 +57,8 @@ const router = createBrowserRouter([
           fetch(`http://localhost:3000/food/${params.id}`)
       },
       {
-
+        path: "/all-food",
+        element: <AllFood/>
       },
       {
 

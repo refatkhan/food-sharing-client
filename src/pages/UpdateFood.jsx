@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { AuthContext } from '../provider/AuthProvider';
 import { Link, useLoaderData } from 'react-router';
 import { toast } from 'react-toastify';
+import { IoReturnDownBack } from "react-icons/io5";
 
 const UpdateFood = () => {
     const { user } = useContext(AuthContext);
@@ -49,7 +50,7 @@ const UpdateFood = () => {
         <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-[#4DA8DA]">
             <div className='flex  justify-between items-center'>
                 <h2 className="text-2xl font-bold mb-6 ">Update Food Info</h2>
-                <Link className='bg-green-700 '>Back to manage</Link>
+                <Link to={"/browse-foods"} className="btn btn-md bg-green-600 text-white hover:bg-green-700 rounded-full">Back <IoReturnDownBack size={20}/> </Link>
             </div>
             <form onSubmit={handleUpdate} className="space-y-4">
 

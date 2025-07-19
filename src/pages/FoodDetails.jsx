@@ -20,7 +20,7 @@ const FoodDetails = () => {
                     } = foodData;
     return (
         <div>
-            
+                
         </div>
     );
 };
