@@ -11,7 +11,7 @@ const ManageMyFoods = () => {
         if (!user?.email) return;
 
         axios
-            .get(`http://localhost:3000/foods?email=${user.email}`)
+            .get(`https:/food-server-sooty.vercel.app/foods?email=${user.email}`)
             .then((res) => {
                 setMyFoods(res.data);
                 setLoading(false);
@@ -27,7 +27,7 @@ const ManageMyFoods = () => {
         if (!window.confirm("Are you sure you want to delete this food?")) return;
 
         axios
-            .delete(`http://localhost:3000/food/${id}`)
+            .delete(`https:/food-server-sooty.vercel.app/food/${id}`)
             .then((res) => {
                 if (res.data.deletedCount > 0) {
                     alert("Food deleted successfully.");

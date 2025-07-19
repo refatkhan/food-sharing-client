@@ -7,7 +7,7 @@ const AvailableFoods = () => {
     const [isGridThree, setIsGridThree] = useState(true); // Toggle state
 
     useEffect(() => {
-        axios.get("http://localhost:3000/available-foods")
+        axios.get("https:/food-server-sooty.vercel.app/available-foods")
             .then((res) => {
                 setFoods(res.data);
             })

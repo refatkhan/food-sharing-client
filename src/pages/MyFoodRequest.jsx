@@ -20,7 +20,7 @@ const MyRequestedFoods = () => {
 
     const fetchRequestedFoods = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/requested-foods", {
+        const res = await axios.get("https:/food-server-sooty.vercel.app/requested-foods", {
           headers: {
             Authorization: `Bearer ${user.accessToken}`,
           },
