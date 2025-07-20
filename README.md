@@ -75,7 +75,7 @@ src/
 All backend endpoints are called using Axios, e.g.:
 
 \`\`\`js
-axios.post("http://localhost:3000/add-food", foodData)
+axios.post("https://food-server-sooty.vercel.app/add-food", foodData)
 \`\`\`
 
 Sample endpoints:

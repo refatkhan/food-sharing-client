@@ -6,7 +6,7 @@ const FeaturedFoods = () => {
     const [featuredFoods, setFeaturedFoods] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:3000/food-featured')
+        axios.get('https://food-server-sooty.vercel.app/food-featured')
             .then(res => setFeaturedFoods(res.data))
             .catch(err => console.error("Error fetching featured foods:", err));
     }, []);
