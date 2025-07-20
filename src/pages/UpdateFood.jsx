@@ -47,7 +47,7 @@ const UpdateFood = () => {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-[#4DA8DA] text-gray-800 dark:text-gray-100">
+        <div className="max-w-3xl mx-auto p-6 bg-green-200 rounded-lg shadow-md dark:bg-[#4DA8DA] text-gray-800 dark:text-gray-100">
             <div className='flex  justify-between items-center'>
                 <h2 className="text-2xl font-bold mb-6 ">Update Food Info</h2>
                 <Link to={"/browse-foods"} className="btn btn-md bg-green-600 text-white hover:bg-green-700 rounded-full">Back <IoReturnDownBack size={20} /> </Link>
@@ -62,7 +62,7 @@ const UpdateFood = () => {
                         id="foodName"
                         defaultValue={foodName}
                         placeholder="e.g., Rice, Chicken Curry"
-                        className="input input-bordered w-full"
+                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                         required
                     />
                 </div>
@@ -74,7 +74,7 @@ const UpdateFood = () => {
                         name="location"
                         id="location"
                         placeholder="City, Area"
-                        className="input input-bordered w-full"
+                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                         defaultValue={location}
                         required
                     />
@@ -87,7 +87,7 @@ const UpdateFood = () => {
                         name="foodQuantity"
                         id="foodQuantity"
                         placeholder="Enter amount in number"
-                        className="input input-bordered w-full"
+                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                         defaultValue={foodQuantity}
                         required
                     />
@@ -99,7 +99,7 @@ const UpdateFood = () => {
                         type="datetime-local"
                         name="expiryDateTime"
                         id="expiryDateTime"
-                        className="input input-bordered w-full"
+                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                         defaultValue={expiryDateTime ? expiryDateTime.slice(0, 16) : ''}
                         required
                     />
@@ -139,7 +139,7 @@ const UpdateFood = () => {
                         name="imageUrl"
                         id="imageUrl"
                         placeholder="https://example.com/image.jpg"
-                        className="input input-bordered w-full"
+                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                         defaultValue={imageUrl}
                         required
                     />
@@ -153,7 +153,7 @@ const UpdateFood = () => {
                         id="userEmail"
                         value={user?.email}
                         readOnly
-                        className="input input-bordered w-full"
+                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                     />
                 </div>
 
@@ -165,7 +165,7 @@ const UpdateFood = () => {
                         id="userName"
                         value={user?.displayName}
                         readOnly
-                        className="input input-bordered w-full"
+                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                     />
                 </div>
 

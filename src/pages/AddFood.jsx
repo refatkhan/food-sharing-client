@@ -33,7 +33,7 @@ const AddFood = () => {
     };
     return (
         <div>
-            <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-[#4DA8DA] text-gray-800 dark:text-gray-100">
+            <div className="max-w-3xl mx-auto p-6 bg-green-200 rounded-lg shadow-md dark:bg-[#4DA8DA] text-gray-800 dark:text-gray-100">
                 <h2 className="text-2xl font-bold mb-6">Add Your Remain Food</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -44,7 +44,7 @@ const AddFood = () => {
                             name="foodName"
                             id="foodName"
                             placeholder='rice , chiken curry'
-                            className="input input-bordered w-full"
+                            className="input input-bordered w-full bg-white text-gray-800 dark:text-gray-100 "
                             required
                         />
                     </div>
@@ -56,7 +56,7 @@ const AddFood = () => {
                             name="location"
                             id="location"
                             placeholder="City, Area"
-                            className="input input-bordered w-full"
+                            className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                             required
                         />
                     </div>
@@ -68,7 +68,7 @@ const AddFood = () => {
                             name="foodQuantity"
                             id="foodQuantity"
                             placeholder="Enter amount in number"
-                            className="input input-bordered w-full"
+                            className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                             required
                         />
                     </div>
@@ -78,7 +78,7 @@ const AddFood = () => {
                             name="description"
                             id="description"
                             placeholder="add description about foods"
-                            className="textarea textarea-bordered w-full"
+                            className="textarea textarea-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                             required
                         ></textarea>
                     </div>
@@ -90,14 +90,14 @@ const AddFood = () => {
                             name="contactInfo"
                             id="contactInfo"
                             placeholder="Phone number, email, etc."
-                            className="input input-bordered w-full"
+                            className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                             required
                         />
                     </div>
 
                     <div>
                         <label className="block font-medium mb-1" htmlFor="availability">Food Status</label>
-                        <select name="availability" id="availability" className="select select-bordered w-full" required>
+                        <select name="availability" id="availability" className="select select-bordered w-full bg-white text-gray-800 dark:text-gray-100" required>
                             <option disabled selected>Select availability</option>
                             <option>Available</option>
                         </select>
@@ -108,7 +108,7 @@ const AddFood = () => {
                             name='imageUrl'
                             id='imageUrl'
                             placeholder='https://i.ibb.co/4ZkCjr4j/photo-1609139027234-57570f43f692.jpg'
-                            className="input input-bordered w-full"
+                            className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                             required />
                     </div>
                     <div>
@@ -119,7 +119,7 @@ const AddFood = () => {
                             id="userEmail"
                             value={user?.email}
                             readOnly
-                            className="input input-bordered w-full "
+                            className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
                         />
                     </div>
 
@@ -131,7 +131,7 @@ const AddFood = () => {
                             id="userName"
                             value={user?.displayName}
                             readOnly
-                            className="input input-bordered w-full  "
+                            className="input input-bordered w-full   bg-white text-gray-800 dark:text-gray-100"
                         />
                     </div>
 

@@ -41,7 +41,7 @@ const MyRequestedFoods = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="relative overflow-x-auto mt-6">
+    <div className="relative overflow-x-auto mt-6 text-gray-800 dark:text-gray-100">
       <h2 className="text-2xl font-semibold mb-4">My Requested Foods</h2>
       {requests.length === 0 ? (
         <p>You haven’t requested any food yet.</p>
