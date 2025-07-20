@@ -28,7 +28,7 @@ const UpdateFood = () => {
         const form = new FormData(e.target);
         const data = Object.fromEntries(form);
 
-        fetch(`https://food-server-sooty.vercel.app/food/${_id}`, {
+        fetch(`http://localhost:3000/food/${_id}`, {
             method: "PUT",
             headers: {
                 "content-type": "application/json",
@@ -47,10 +47,10 @@ const UpdateFood = () => {
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-[#4DA8DA]">
+        <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-[#4DA8DA] text-gray-800 dark:text-gray-100">
             <div className='flex  justify-between items-center'>
                 <h2 className="text-2xl font-bold mb-6 ">Update Food Info</h2>
-                <Link to={"/browse-foods"} className="btn btn-md bg-green-600 text-white hover:bg-green-700 rounded-full">Back <IoReturnDownBack size={20}/> </Link>
+                <Link to={"/browse-foods"} className="btn btn-md bg-green-600 text-white hover:bg-green-700 rounded-full">Back <IoReturnDownBack size={20} /> </Link>
             </div>
             <form onSubmit={handleUpdate} className="space-y-4">
 
@@ -174,7 +174,7 @@ const UpdateFood = () => {
                     <p>Added on: {date} at {time}</p>
                 </div>
 
-                <button type="submit" className="btn bg-[#e623a5dd] w-full mt-4">
+                <button type="submit" className="btn bg-green-800 text-white w-full mt-4">
                     Update Food
                 </button>
             </form>

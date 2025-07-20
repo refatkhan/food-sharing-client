@@ -19,7 +19,7 @@ const AddFood = () => {
             minute: '2-digit',
             hour12: true
         }); // "06:15 PM"
-        axios.post("https://food-server-sooty.vercel.app/add-food", foodData)
+        axios.post("http://localhost:3000/add-food", foodData)
             .then((res) => {
                 if (res.data.insertedId) {
                     notify()
@@ -33,7 +33,7 @@ const AddFood = () => {
     };
     return (
         <div>
-            <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-[#4DA8DA]">
+            <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-[#4DA8DA] text-gray-800 dark:text-gray-100">
                 <h2 className="text-2xl font-bold mb-6">Add Your Remain Food</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
 

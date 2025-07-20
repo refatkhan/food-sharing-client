@@ -33,7 +33,7 @@ const FoodDetails = () => {
         };
 
         try {
-            const res = await axios.patch(`https://food-server-sooty.vercel.app/food/${food._id}`, requestData, {
+            const res = await axios.patch(`http://localhost:3000/food/${food._id}`, requestData, {
                 headers: {
                     Authorization: `Bearer ${user.accessToken}`,
                 },

@@ -25,33 +25,35 @@ const Navbar = () => {
 
     const navLinks = (
         <>
-            <li>
+            <li  onClick={() => document.activeElement.blur()}> 
                 <NavLink to="/" className={({ isActive }) =>
                     isActive ? "text-white bg-green-600 px-4 py-2 rounded-lg"
                         : "text-gray-700 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg"
+
                 }>Home</NavLink>
             </li>
-            <li>
+            <li  onClick={() => document.activeElement.blur()}>
                 <NavLink to="/available-foods" className={({ isActive }) =>
                     isActive ? "text-white bg-green-600 px-4 py-2 rounded-lg"
                         : "text-gray-700 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg"
+                        
                 }>Available Food</NavLink>
             </li>
             {user && (
                 <>
-                    <li>
+                    <li  onClick={() => document.activeElement.blur()}>
                         <NavLink to="/add-food" className={({ isActive }) =>
                             isActive ? "text-white bg-green-600 px-4 py-2 rounded-lg"
                                 : "text-gray-700 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg"
                         }>Add Foods</NavLink>
                     </li>
-                    <li>
+                    <li  onClick={() => document.activeElement.blur()}>
                         <NavLink to="/food-request" className={({ isActive }) =>
                             isActive ? "text-white bg-green-600 px-4 py-2 rounded-lg"
                                 : "text-gray-700 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg"
                         }>Request Food</NavLink>
                     </li>
-                    <li>
+                    <li  onClick={() => document.activeElement.blur()}>
                         <NavLink to="/browse-foods" className={({ isActive }) =>
                             isActive ? "text-white bg-green-600 px-4 py-2 rounded-lg"
                                 : "text-gray-700 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg"
@@ -121,15 +123,15 @@ const Navbar = () => {
                             <NavLink to="/login"
                                 className={({ isActive }) =>
                                     isActive
-                                        ? "bg-green-600 text-white px-4 py-2 rounded-lg"
-                                        : "hover:bg-green-600 hover:text-white px-4 py-2 rounded-lg"
+                                        ? "bg-green-600 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-lg"
+                                        : "hover:bg-green-600 text-gray-800 dark:text-gray-100 hover:text-white px-4 py-2 rounded-lg"
                                 }
                             >Sign In</NavLink>
                             <NavLink to="/signup"
                                 className={({ isActive }) =>
                                     isActive
-                                        ? "bg-green-600 text-white px-4 py-2 rounded-lg"
-                                        : "hover:bg-green-600 hover:text-white px-4 py-2 rounded-lg"
+                                        ? "bg-green-600 text-gray-800 dark:text-gray-100 px-4 py-2 rounded-lg"
+                                        : "hover:bg-green-600 text-gray-800 dark:text-gray-100 hover:text-white px-4 py-2 rounded-lg"
                                 }
                             >Sign Up</NavLink>
                         </div>

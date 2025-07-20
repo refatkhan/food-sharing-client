@@ -57,7 +57,7 @@ const router = createBrowserRouter([
           <FoodDetails />
         </PrivateRoute>),
         loader: ({ params }) =>
-          fetch(`https://food-server-sooty.vercel.app/food/${params.id}`)
+          fetch(`http://localhost:3000/food/${params.id}`)
       },
       {
         path: "/update-food/:id",
@@ -65,7 +65,7 @@ const router = createBrowserRouter([
           <UpdateFood />
         </PrivateRoute>),
         loader: ({ params }) =>
-          fetch(`https://food-server-sooty.vercel.app/food/${params.id}`)
+          fetch(`http://localhost:3000/food/${params.id}`)
       },
       {
         path: "/all-food",

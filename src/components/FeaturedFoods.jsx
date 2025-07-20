@@ -6,14 +6,17 @@ const FeaturedFoods = () => {
     const [featuredFoods, setFeaturedFoods] = useState([]);
 
     useEffect(() => {
-        axios.get('https://food-server-sooty.vercel.app/food-featured')
+        axios.get('http://localhost:3000/food-featured')
             .then(res => setFeaturedFoods(res.data))
             .catch(err => console.error("Error fetching featured foods:", err));
     }, []);
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h3 className="text-3xl font-semibold text-center my-8">Today's Featured Foods</h3>
+            <div className='my-6'>
+                <h3 className="text-3xl py-3 font-semibold text-center text-gray-800 dark:text-gray-100 ">Don’t miss  <span className=' underline underline-offset-10 decoration-4  decoration-emerald-400'>out! Freshly  </span> Shared</h3>
+                <p className='text-gray-800 dark:text-gray-100 text-center'>Take a look at the most loved meals shared by our community. <br />They're fresh, generous, made with care, and waiting for someone just like you to enjoy and appreciate them.</p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {featuredFoods.map(food => {
                     const { _id, foodName, imageUrl, foodQuantity, location, description } = food;
