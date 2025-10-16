@@ -144,7 +144,7 @@ firebase deploy
 
 **Refat Khan**  
 Frontend Developer – Assignment 11, Food Sharing Platform  
-Email: _your-email@example.com_ (if desired)
+Email: _refatkhan.dev@gmail.com_ (if desired)
 
 ---
 
