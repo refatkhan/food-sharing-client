@@ -5,6 +5,9 @@ import FeaturedFoods from "../components/FeaturedFoods";
 import TestimonialSlider from "../components/TestimonialSlider";
 import HowItWorksAndImpact from "../components/HowItWorksAndImpact ";
 import HowItWorks from "../components/HowItWorks";
+import Hero from "../components/Hero";
+import FAQ from "../components/FAQ";
+import GetInvolved from "../components/GetInvolved";
 
 const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -22,7 +25,7 @@ const Home = () => {
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.6 }}
             >
-                <Banner />
+                <Hero />
             </motion.div>
 
             {/* Featured Foods Section */}
@@ -65,7 +68,8 @@ const Home = () => {
             >
                 <TestimonialSlider />
             </motion.div>
-
+            <FAQ />
+            <GetInvolved />
         </div>
     );
 };

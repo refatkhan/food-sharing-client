@@ -1,15 +1,20 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, useInView } from 'framer-motion';
 
 const FeaturedFoods = () => {
     const [featuredFoods, setFeaturedFoods] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Create a ref for the main section
+    const ref = useRef(null);
+    // useInView hook will return true if the ref'd element is in the viewport
+    const isInView = useInView(ref, { once: true, amount: 0.1 });
+
     useEffect(() => {
         axios.get('https://food-server-sooty.vercel.app/food-featured')
             .then(res => {
-                // We only want to show the top 6 featured foods
                 setFeaturedFoods(res.data.slice(0, 6));
                 setIsLoading(false);
             })
@@ -18,6 +23,23 @@ const FeaturedFoods = () => {
                 setIsLoading(false);
             });
     }, []);
+
+    // Animation variants for the grid container
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.15, // Animate children one by one with a 0.15s delay
+            },
+        },
+    };
+
+    // Animation variants for each card
+    const cardVariants = {
+        hidden: { opacity: 0, y: 30 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+    };
 
     const FoodCardSkeleton = () => (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden animate-pulse">
@@ -37,22 +59,32 @@ const FeaturedFoods = () => {
 
     const FoodCard = ({ food }) => {
         const { _id, foodName, imageUrl, foodQuantity, location, description, donator } = food;
-        // Fallback for donator info if not provided by the API
         const donatorInfo = donator || {
             name: 'A kind stranger',
-            image: `https://i.pravatar.cc/150?u=${_id}` // Generates a unique placeholder avatar
+            image: `https://i.pravatar.cc/150?u=${_id}`
         };
 
         return (
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-2 group border border-gray-200 dark:border-gray-700">
-                {/* Image Section with Donator Info */}
+            <motion.div
+                variants={cardVariants}
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden group border border-gray-200 dark:border-gray-700 h-full flex flex-col"
+            >
+                {/* Image Section */}
                 <div className="relative">
-                    <Link to={`/food-details/${_id}`} className="block h-56">
-                        <img className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" src={imageUrl} alt={foodName} />
+                    <Link to={`/food-details/${_id}`} className="block h-56 overflow-hidden">
+                        <motion.img
+                            className="w-full h-full object-cover"
+                            src={imageUrl}
+                            alt={foodName}
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.4, ease: 'easeOut' }}
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     </Link>
                     <div className="absolute bottom-4 left-4 flex items-center space-x-3">
-                        <img className="w-11 h-11 rounded-full border-2 border-white/80 shadow-md" src={donatorInfo.image} alt={donatorInfo.name} />
+                        <img className="w-11 h-11 rounded-full border-2 border-white/80 shadow-md object-cover" src={donatorInfo.image} alt={donatorInfo.name} />
                         <div>
                             <p className="text-sm text-gray-200">Shared by</p>
                             <p className="text-white font-semibold">{donatorInfo.name}</p>
@@ -64,20 +96,20 @@ const FeaturedFoods = () => {
                 <div className="p-6 flex flex-col flex-grow">
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white truncate" title={foodName}>{foodName}</h3>
                     <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm flex-grow h-12 overflow-hidden">{description}</p>
-                    
+
                     {/* Info with Icons */}
                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center text-gray-700 dark:text-gray-300">
                         <div className="flex items-center space-x-2" title={`Serves ${foodQuantity} people`}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                             <span className="font-medium">Serves {foodQuantity}</span>
                         </div>
                         <div className="flex items-center space-x-2" title={location}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
                             <span className="font-medium truncate max-w-[120px]">{location}</span>
                         </div>
                     </div>
 
-                    {/* View Details Button */}
+                    {/* Button */}
                     <div className="mt-6">
                         <Link to={`/food-details/${_id}`} className="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-center text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:ring-4 focus:outline-none focus:ring-emerald-300 dark:bg-emerald-600 dark:hover:bg-emerald-700 dark:focus:ring-emerald-800 transition-colors duration-300">
                             View Details
@@ -85,38 +117,53 @@ const FeaturedFoods = () => {
                         </Link>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         );
     }
 
     return (
-        <div className="bg-gray-50 dark:bg-gray-950 py-16 sm:py-24">
+        <div ref={ref} className="bg-gray-50 dark:bg-gray-950 py-16 sm:py-24">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-12">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    className="text-center mb-12"
+                >
                     <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white tracking-tight">
                         Freshly Shared Meals
                     </h2>
                     <p className="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                         Discover delicious, home-cooked meals shared by our generous community. Ready to be enjoyed.
                     </p>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </motion.div>
+
+                <motion.div
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate={isInView ? "visible" : "hidden"}
+                >
                     {isLoading
                         ? Array.from({ length: 6 }).map((_, index) => <FoodCardSkeleton key={index} />)
                         : featuredFoods.map(food => <FoodCard key={food._id} food={food} />)
                     }
-                </div>
+                </motion.div>
 
                 {featuredFoods.length > 0 && (
-                    <div className="text-center mt-16">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.7, ease: "easeOut", delay: 0.4 }}
+                        className="text-center mt-16"
+                    >
                         <Link
                             to="/all-food"
                             className="inline-block px-8 py-3 text-lg font-semibold text-white bg-gray-800 rounded-lg hover:bg-black dark:bg-gray-200 dark:text-gray-900 dark:hover:bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 dark:focus:ring-gray-600 transition-transform duration-300 hover:scale-105"
                         >
                             Show All Shared Foods
                         </Link>
-                    </div>
+                    </motion.div>
                 )}
             </div>
         </div>
