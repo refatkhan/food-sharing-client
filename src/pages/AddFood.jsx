@@ -11,7 +11,6 @@ const AddFood = () => {
         const form = new FormData(e.target);
         const foodData = Object.fromEntries(form);
         const now = new Date();
-
         // Separate fields
         foodData.date = now.toISOString().split("T")[0]; // "2025-07-18"
         foodData.time = now.toLocaleTimeString('en-US', {
@@ -28,7 +27,6 @@ const AddFood = () => {
             .catch((err) => {
                 console.error("Error submitting food:", err);
             });
-
         e.target.reset();
     };
     return (
@@ -36,7 +34,6 @@ const AddFood = () => {
             <div className="max-w-3xl mx-auto p-6 bg-green-200 rounded-lg shadow-md dark:bg-[#4DA8DA] text-gray-800 dark:text-gray-100">
                 <h2 className="text-2xl font-bold mb-6">Add Your Remain Food</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-
                     <div>
                         <label className="block font-medium mb-1" htmlFor="title">Food Name</label>
                         <input
