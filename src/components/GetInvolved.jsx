@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion'; // Import motion
 
 const GetInvolved = () => {
     const ref = useRef(null);
@@ -21,11 +21,11 @@ const GetInvolved = () => {
         hidden: { opacity: 0, x: 30 },
         visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } },
     };
-    
+
     // Variant for the image column
     const imageVariants = {
-         hidden: { opacity: 0, x: -30 },
-         visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
+        hidden: { opacity: 0, x: -30 },
+        visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
     };
 
     return (
@@ -38,12 +38,11 @@ const GetInvolved = () => {
                         initial="hidden"
                         animate={isInView ? "visible" : "hidden"}
                     >
-                        <img 
-                            src="https://images.pexels.com/photos/6646917/pexels-photo-6646917.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" 
+                        <img
+                            src="https://images.pexels.com/photos/6646917/pexels-photo-6646917.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                             alt="Volunteers smiling and packing food donations"
                             className="rounded-2xl shadow-xl w-full h-full object-cover"
                         />
-                        {/*  */}
                     </motion.div>
 
                     {/* Text and CTA Column */}
@@ -52,14 +51,14 @@ const GetInvolved = () => {
                         initial="hidden"
                         animate={isInView ? "visible" : "hidden"}
                     >
-                        <motion.h2 
+                        <motion.h2
                             variants={itemVariants}
                             className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 dark:text-white tracking-tight"
                         >
                             Become a Hunger Hero in Our <span className="text-emerald-500">Community</span>
                         </motion.h2>
 
-                        <motion.p 
+                        <motion.p
                             variants={itemVariants}
                             className="mt-4 text-lg text-gray-600 dark:text-gray-300"
                         >
@@ -67,14 +66,15 @@ const GetInvolved = () => {
                         </motion.p>
 
                         <motion.div variants={itemVariants} className="mt-8">
-                            <a 
+                            {/* --- Ensure this is motion.a --- */}
+                            <motion.a
                                 href="/volunteer"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 className="inline-block px-8 py-4 text-lg font-semibold text-white bg-gray-800 rounded-lg shadow-lg hover:bg-black dark:bg-gray-200 dark:text-gray-900 dark:hover:bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 dark:focus:ring-gray-600 transition-all duration-300"
                             >
                                 Learn More & Sign Up
-                            </a>
+                            </motion.a>
                         </motion.div>
                     </motion.div>
                 </div>
@@ -84,3 +84,4 @@ const GetInvolved = () => {
 };
 
 export default GetInvolved;
+

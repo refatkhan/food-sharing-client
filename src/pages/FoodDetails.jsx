@@ -1,187 +1,281 @@
-import React, { useContext, useState } from "react";
-import { useLoaderData } from "react-router";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { AuthContext } from "../provider/AuthProvider";
+import React, { useState, useContext, useRef, createContext } from 'react';
+import { useParams } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { toast } from 'react-toastify';
+// --- Placeholder for AuthContext ---
+// In your actual application, you would remove this and rely on your real AuthProvider at the root level.
+const AuthContext = createContext({ user: null, loading: true }); // Default loading to true
+const mockUser = {
+    email: 'viewer@example.com',
+    accessToken: 'mock-jwt-token', // Placeholder token
+};
+// You might need to adjust this mock provider if testing locally without the real one
+const MockAuthProvider = ({ children }) => {
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        // Simulate auth check delay
+        const timer = setTimeout(() => setLoading(false), 500);
+        return () => clearTimeout(timer);
+    }, []);
+    return (
+        <AuthContext.Provider value={{ user: mockUser, loading }}>
+            {children}
+        </AuthContext.Provider>
+    )
+};
+// --- End Placeholder ---
 
-const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const d = new Date(dateString);
-    return isNaN(d.getTime()) ? "Invalid Date" : d.toLocaleDateString();
+
+// --- Data Fetching Functions ---
+const fetchFoodById = async (foodId) => {
+    const { data } = await axios.get(`https://food-server-sooty.vercel.app/food/${foodId}`);
+    return data;
 };
 
+const requestFood = async ({ foodId, requestData, token }) => {
+    const { data } = await axios.patch(`https://food-server-sooty.vercel.app/food/${foodId}`, requestData, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return data;
+};
+
+
+// --- Main Component ---
 const FoodDetails = () => {
-    const food = useLoaderData(); // Loaded from route loader
-    const { user } = useContext(AuthContext);
+    const { id } = useParams();
+    // Use the actual AuthContext or the mock if needed
+    const { user, loading: authLoading } = useContext(AuthContext); // Get loading state
+
+    const queryClient = useQueryClient();
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, amount: 0.2 });
 
     const [showModal, setShowModal] = useState(false);
     const [notes, setNotes] = useState("");
-    const [hasRequested, setHasRequested] = useState(false); // New state
 
-    const currentDate = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    // --- React Query for data fetching ---
+    // **FIX APPLIED HERE**: Add 'enabled' option
+    const { data: food, isLoading: foodLoading, isError, error } = useQuery({
+        queryKey: ['food', id],
+        queryFn: () => fetchFoodById(id),
+        // Only run the query once authentication is no longer loading
+        enabled: !authLoading,
+    });
 
-    const handleRequest = async () => {
-        if (!user?.accessToken) {
+    // --- React Query for data mutation ---
+    const mutation = useMutation({
+        mutationFn: (requestPayload) => requestFood(requestPayload),
+        onSuccess: () => {
+            toast.success("Request submitted successfully!");
+            queryClient.invalidateQueries({ queryKey: ['food', id] });
+            setShowModal(false);
+        },
+        onError: (err) => {
+            toast.error(err.response?.data?.message || "Request failed. Please try again.");
+        },
+    });
+
+    // --- Event Handler ---
+    const handleRequestSubmit = () => {
+        // We might not need the user check here anymore if the button is disabled correctly
+        // But it's good practice to keep it.
+        if (!user) {
             toast.error("You must be logged in to request food.");
             return;
         }
 
-        const requestData = {
-            userEmail: user.email,
-            requestDate: currentDate,
-            notes: notes,
-        };
-
-        try {
-            const res = await axios.patch(`https://food-server-sooty.vercel.app/food/${food._id}`, requestData, {
-                headers: {
-                    Authorization: `Bearer ${user.accessToken}`,
-                },
-            });
-
-            if (res.data.modifiedCount > 0) {
-                toast.success("Request successful!");
-                setShowModal(false);
-                setHasRequested(true);  // Disable button after successful request
-            } else {
-                toast.error("Request failed! Please try again.");
+        mutation.mutate({
+            foodId: food._id,
+            token: user.accessToken,
+            requestData: {
+                userEmail: user.email,
+                requestDate: new Date().toISOString(),
+                notes: notes,
             }
-        } catch (e) {
-            console.error(e);
-            toast.error("Request failed!");
-        }
+        });
     };
 
-    return (
-        <div style={{ maxWidth: "600px", margin: "auto", padding: "20px" }}>
-            <img
-                src={food.imageUrl}
-                alt={food.foodName}
-                style={{ width: "100%", borderRadius: "8px" }}
-            />
-            <h2>{food.foodName}</h2>
-            <p>
-                <strong>Donator:</strong> {food.donatorName || "N/A"}
-            </p>
-            <p>
-                <strong>Email:</strong> {food.donatorEmail || "N/A"}
-            </p>
-            <p>
-                <strong>Pickup Location:</strong> {food.pickupLocation || "N/A"}
-            </p>
-            <p>
-                <strong>Expire Date:</strong> {formatDate(food.expireDate)}
-            </p>
+    // --- Render Logic ---
+    // **FIX APPLIED HERE**: Check authLoading first
+    if (authLoading || foodLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+                <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-emerald-500"></div>
+            </div>
+        );
+    }
 
-            <button
-                onClick={() => setShowModal(true)}
-                style={{
-                    padding: "10px 20px",
-                    background: hasRequested ? "#ccc" : "#4CAF50",
-                    color: hasRequested ? "#666" : "white",
-                    border: "none",
-                    marginTop: "10px",
-                    cursor: hasRequested ? "not-allowed" : "pointer",
-                }}
-                disabled={hasRequested}
-                title={hasRequested ? "You have requested this food" : ""}
-            >
-                {hasRequested ? "Already Requested" : "Request"}
-            </button>
-
-            {/* Modal */}
-            {showModal && (
-                <div
-                    style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        backgroundColor: "rgba(0,0,0,0.5)",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        zIndex: 9999,
-                    }}
-                >
-                    <div
-                        style={{
-                            backgroundColor: "white",
-                            padding: "20px",
-                            width: "90%",
-                            maxWidth: "500px",
-                            borderRadius: "8px",
-                        }}
-                    >
-                        <h3>Request This Food</h3>
-
-                        <label>Food Name:</label>
-                        <input type="text" value={food.foodName || ""} readOnly />
-                        <br />
-
-                        <label>Food ID:</label>
-                        <input type="text" value={food._id} readOnly />
-                        <br />
-
-                        <label>Donator Email:</label>
-                        <input type="text" value={food.donatorEmail || ""} readOnly />
-                        <br />
-
-                        <label>Donator Name:</label>
-                        <input type="text" value={food.donatorName || ""} readOnly />
-                        <br />
-
-                        <label>Your Email:</label>
-                        <input type="text" value={user?.email || ""} readOnly />
-                        <br />
-
-                        <label>Request Date:</label>
-                        <input type="text" value={currentDate} readOnly />
-                        <br />
-
-                        <label>Pickup Location:</label>
-                        <input type="text" value={food.pickupLocation || ""} readOnly />
-                        <br />
-
-                        <label>Expire Date:</label>
-                        <input type="text" value={formatDate(food.expireDate)} readOnly />
-                        <br />
-
-                        <label>Additional Notes:</label>
-                        <textarea
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
-                            rows={4}
-                            style={{ width: "100%" }}
-                        />
-                        <br />
-
-                        <div style={{ marginTop: "10px" }}>
-                            <button
-                                onClick={handleRequest}
-                                style={{
-                                    marginRight: "10px",
-                                    background: "blue",
-                                    color: "white",
-                                    padding: "6px 12px",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                Request
-                            </button>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                style={{ padding: "6px 12px", cursor: "pointer" }}
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
+    if (isError) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-center py-10 text-red-600 dark:text-red-400 bg-gray-50 dark:bg-gray-950">
+                <div>
+                    <h2 className="text-2xl font-bold mb-2">Failed to Load Food Details</h2>
+                    <p>Error: {error.message}</p>
                 </div>
-            )}
-        </div>
+            </div>
+        );
+    }
+
+    // Check if food data is available after loading states are false
+    if (!food) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-center py-10 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-950">
+                <div>
+                    <h2 className="text-2xl font-bold mb-2">Food Not Found</h2>
+                    <p>Could not retrieve details for this item.</p>
+                </div>
+            </div>
+        );
+    }
+
+
+    // Safely access data now that loading is done and food exists
+    const donatorName = food.userName || 'Anonymous Donator';
+    const donatorImage = food.userImage || `https://i.pravatar.cc/150?u=${food.userEmail}`;
+    const isOwner = user?.email === food.userEmail;
+    const statusText = food.status ? food.status.charAt(0).toUpperCase() + food.status.slice(1) : 'Unknown';
+    const isAvailable = food.status === 'available';
+
+    return (
+        // ... rest of the JSX remains the same as the previous correct version ...
+        <>
+            <div ref={ref} className="bg-white dark:bg-gray-900 py-12 sm:py-20 overflow-hidden">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: 1 } : {}}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+                >
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+                        {/* Image Column */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={isInView ? { opacity: 1, x: 0 } : {}}
+                            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+                            className="rounded-2xl shadow-2xl overflow-hidden"
+                        >
+                            <img src={food.imageUrl} alt={food.foodName} className="w-full h-full object-cover aspect-[4/3]" />
+                        </motion.div>
+
+                        {/* Details Column */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={isInView ? { opacity: 1, x: 0 } : {}}
+                            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+                            className="flex flex-col h-full"
+                        >
+                            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white tracking-tight">{food.foodName}</h1>
+
+                            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-3">Description</h2>
+                                <p className="text-lg text-gray-600 dark:text-gray-300">{food.description || "No description provided."}</p>
+                            </div>
+
+                            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg">
+                                <div className="flex items-center text-gray-700 dark:text-gray-300">
+                                    <span className="w-8 h-8 mr-3 text-emerald-500"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm0-2a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm-1-6h2v-2h-2v2Zm0-4h2V6h-2v4Z" /></svg></span>
+                                    <div><strong>Status:</strong><span className={`ml-2 font-semibold ${isAvailable ? 'text-green-500' : 'text-yellow-500'}`}>{statusText}</span></div>
+                                </div>
+                                <div className="flex items-center text-gray-700 dark:text-gray-300">
+                                    <span className="w-8 h-8 mr-3 text-emerald-500"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8a8 8 0 0 1-8 8Zm1-12h-2v4h4v-2h-2Z" /></svg></span>
+                                    <div><strong>Posted:</strong><span className="ml-2">{food.date ? new Date(food.date).toLocaleDateString() : 'N/A'}</span></div>
+                                </div>
+                            </div>
+
+                            {/* Donator Info */}
+                            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Shared By</h2>
+                                <div className="flex items-center">
+                                    <img className="w-16 h-16 rounded-full object-cover mr-4 shadow-md" src={donatorImage} alt={donatorName} />
+                                    <div>
+                                        <p className="text-xl font-bold text-gray-900 dark:text-white">{donatorName}</p>
+                                        <p className="text-md text-gray-500 dark:text-gray-400">{food.userEmail}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Action Button */}
+                            <div className="mt-8 flex-grow flex items-end">
+                                <motion.button
+                                    onClick={() => setShowModal(true)}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    disabled={!isAvailable || isOwner}
+                                    className="w-full px-8 py-4 text-lg font-semibold text-white bg-emerald-600 rounded-lg shadow-lg hover:bg-emerald-700 focus:ring-4 focus:outline-none focus:ring-emerald-300 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none"
+                                >
+                                    {isOwner ? "This is your post" : (isAvailable ? "Request This Food" : "Already Requested")}
+                                </motion.button>
+                            </div>
+                        </motion.div>
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* --- Request Modal --- */}
+            <AnimatePresence>
+                {showModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+                        onClick={() => setShowModal(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            transition={{ ease: "easeOut" }}
+                            className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg p-6"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Confirm Your Request</h2>
+                            <div className="space-y-3 text-gray-700 dark:text-gray-300">
+                                <p><strong>Food:</strong> {food.foodName}</p>
+                                <p><strong>Pickup Location:</strong> {food.location}</p>
+                                <p><strong>Donator:</strong> {donatorName}</p>
+                                <p><strong>Your Email:</strong> {user?.email}</p>
+                            </div>
+                            <div className="mt-6">
+                                <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Additional Notes (Optional)</label>
+                                <textarea
+                                    id="notes"
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    rows={3}
+                                    placeholder="Any allergies, pickup time suggestions, etc."
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                />
+                            </div>
+                            <div className="mt-6 flex justify-end space-x-4">
+                                <button onClick={() => setShowModal(false)} className="px-6 py-2 rounded-lg text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors">Cancel</button>
+                                <button
+                                    onClick={handleRequestSubmit}
+                                    disabled={mutation.isPending}
+                                    className="px-6 py-2 rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 transition-colors"
+                                >
+                                    {mutation.isPending ? "Submitting..." : "Confirm Request"}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
     );
 };
 
-export default FoodDetails;
+// Remove the local QueryClientProvider and AuthProvider wrappers if they exist at the root
+// const queryClient = new QueryClient(); // Remove if global
+// const FoodDetails = () => ( // Remove if global
+//     <QueryClientProvider client={queryClient}>
+//         <MockAuthProvider> {/* Use Mock or real AuthProvider as needed */}
+//             <FoodDetailsComponent />
+//         </MockAuthProvider>
+//     </QueryClientProvider>
+// );
+
+export default FoodDetails; // Export the main component directly
+

@@ -8,6 +8,7 @@ import HowItWorks from "../components/HowItWorks";
 import Hero from "../components/Hero";
 import FAQ from "../components/FAQ";
 import GetInvolved from "../components/GetInvolved";
+import CallToAction from "../components/CallToAction";
 
 const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -70,6 +71,7 @@ const Home = () => {
             </motion.div>
             <FAQ />
             <GetInvolved />
+            <CallToAction />
         </div>
     );
 };

@@ -2,29 +2,35 @@ import React, { useEffect, useRef } from "react";
 import { motion, useInView, animate } from "framer-motion";
 
 // A dedicated Counter component using Framer Motion for the number animation
-function AnimatedCounter({ endValue, suffix }) {
+function AnimatedCounter({ endValue }) { // Removed suffix prop, will handle in StatItem
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, amount: 0.5 });
+    // Trigger animation when the element comes into view
+    const isInView = useInView(ref, { once: true, amount: 0.5 }); // Trigger when 50% visible
 
     useEffect(() => {
+        // Start animation only when the element is in view
         if (isInView && ref.current) {
             const controls = animate(0, endValue, {
-                duration: 2.5,
-                ease: "easeOut",
+                duration: 2.5, // Animation duration
+                ease: "easeOut", // Animation easing
                 onUpdate(value) {
-                    // Directly update the node's text content for performance
-                    ref.current.textContent = Math.round(value).toLocaleString();
+                    // **FIX APPLIED HERE**: Check if ref.current exists before updating
+                    if (ref.current) {
+                        // Directly update the node's text content for performance
+                        ref.current.textContent = Math.round(value).toLocaleString();
+                    }
                 }
             });
             // Cleanup function to stop the animation if the component unmounts
             return () => controls.stop();
         }
-    }, [endValue, isInView]);
+    }, [endValue, isInView]); // Re-run effect if endValue or visibility changes
 
+    // Initial display value before animation starts
     return <span ref={ref}>0</span>;
 }
 
-// SVG Illustrations for each step
+// SVG Illustrations (remain the same as before)
 const Illustrations = {
     Share: () => (
         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-emerald-500">
@@ -77,13 +83,18 @@ const HowItWorksAndImpact = () => {
     ];
 
     const StatItem = ({ end, label, icon }) => {
+        // Extract number and suffix (like ' lbs' or '+')
         const endValue = typeof end === 'string' ? parseInt(end.replace(/[^0-9]/g, '')) : end;
-        const suffix = typeof end === 'string' ? end.replace(/[0-9,]/g, '') : '';
+        const suffix = typeof end === 'string' ? end.replace(/[0-9,]/g, '').trim() : '';
+
         return (
             <div className="text-center">
                 <div className="text-5xl mb-2">{icon}</div>
                 <div className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-white">
-                    <AnimatedCounter endValue={endValue} />{suffix}
+                    {/* Pass only the numeric value to AnimatedCounter */}
+                    <AnimatedCounter endValue={endValue} />
+                    {/* Append the suffix after the animated number */}
+                    {suffix && <span className="ml-1">{suffix}</span>}
                 </div>
                 <p className="mt-1 text-base text-gray-600 dark:text-gray-400">{label}</p>
             </div>
@@ -97,15 +108,10 @@ const HowItWorksAndImpact = () => {
         { label: "Active Volunteers", value: "150+", icon: "💪" },
     ];
 
-    // Animation variants
+    // Animation variants (remain the same)
     const containerVariants = {
         hidden: {},
         visible: { transition: { staggerChildren: 0.2 } },
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
     };
 
     const illustrationVariants = (isEven) => ({
