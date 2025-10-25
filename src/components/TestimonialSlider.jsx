@@ -97,7 +97,9 @@ export default function TestimonialSlider() {
                     </p>
                 </motion.div>
 
-                <div className="relative max-w-4xl mx-auto h-80 sm:h-72 flex items-center justify-center">
+                {/* --- FIX IS HERE --- */}
+                {/* Removed 'max-w-4xl' so it now fills the 'max-w-7xl' parent, just like the FAQ content does */}
+                <div className="relative mx-auto h-80 sm:h-72 flex items-center justify-center">
                     <button onClick={() => paginate(-1)} className="absolute z-10 left-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white dark:hover:bg-gray-700 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 dark:text-white"><path d="m15 18-6-6 6-6" /></svg>
                     </button>
@@ -126,7 +128,9 @@ export default function TestimonialSlider() {
                             }}
                             className="absolute w-full p-2"
                         >
-                            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700/50">
+                            {/* NOTE: With the wider container, you might want to adjust the card's width here. */}
+                            {/* For example, add 'max-w-4xl mx-auto' to this div if you don't want the card to be 'max-w-7xl' wide. */}
+                            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700/50 max-w-4xl mx-auto">
                                 <p className="text-lg italic text-gray-700 dark:text-gray-300 leading-relaxed mb-6 text-center">
                                     <span className="text-5xl text-emerald-300 dark:text-emerald-700/50 font-serif leading-none absolute top-4 left-6">“</span>
                                     {testimonials[page].quote}
@@ -160,4 +164,3 @@ export default function TestimonialSlider() {
         </section>
     );
 }
-

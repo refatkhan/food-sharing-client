@@ -72,8 +72,8 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-2">
+          {/* Desktop Navigation -- CHANGED md: to lg: */}
+          <div className="hidden lg:flex lg:items-center lg:space-x-2">
             <ul className="flex items-center space-x-2">
               {navLinks}
             </ul>
@@ -96,7 +96,8 @@ const Navbar = () => {
                   alt={user.displayName}
                   className="h-10 w-10 rounded-full object-cover cursor-pointer ring-2 ring-offset-2 ring-green-500"
                 />
-                <div className="absolute top-full right-0 mt-3 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
+                {/* REMOVED mt-3 from this div */}
+                <div className="absolute top-full right-0 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
                   <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                     <p className="font-semibold text-gray-800 dark:text-white truncate">{user.displayName}</p>
                     <p className="text-sm text-gray-500 truncate">{user.email}</p>
@@ -110,7 +111,8 @@ const Navbar = () => {
                 </div>
               </div>
             ) : (
-              <div className="hidden md:flex items-center space-x-2">
+              // CHANGED md: to lg:
+              <div className="hidden lg:flex items-center space-x-2">
                 <Link to="/login" className="text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300">
                   Sign In
                 </Link>
@@ -120,8 +122,8 @@ const Navbar = () => {
               </div>
             )}
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
+            {/* Mobile Menu Button -- CHANGED md: to lg: */}
+            <div className="lg:hidden">
               <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={!isMenuOpen ? "M4 6h16M4 12h16m-7 6h7" : "M6 18L18 6M6 6l12 12"} />
@@ -132,9 +134,9 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu -- CHANGED md: to lg: */}
       {isMenuOpen && (
-        <div className="md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+        <div className="lg:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
           <ul className="flex flex-col space-y-1">
             {navLinks}
             {!user && (
@@ -151,4 +153,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

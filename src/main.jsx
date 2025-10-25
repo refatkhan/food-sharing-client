@@ -9,13 +9,10 @@ import router from './routes/routes.jsx';
 import { ToastContainer } from 'react-toastify';
 const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <RouterProvider router={router}></RouterProvider>
         <ToastContainer />
       </AuthProvider>
     </QueryClientProvider>
-
-  </React.StrictMode>
 );

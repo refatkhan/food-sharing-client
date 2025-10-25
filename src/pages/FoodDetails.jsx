@@ -1,39 +1,13 @@
-import React, { useState, useContext, useRef, createContext } from 'react';
-import { useParams } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState, useContext, useRef } from 'react';
+import { useLoaderData } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { toast } from 'react-toastify';
-// --- Placeholder for AuthContext ---
-// In your actual application, you would remove this and rely on your real AuthProvider at the root level.
-const AuthContext = createContext({ user: null, loading: true }); // Default loading to true
-const mockUser = {
-    email: 'viewer@example.com',
-    accessToken: 'mock-jwt-token', // Placeholder token
-};
-// You might need to adjust this mock provider if testing locally without the real one
-const MockAuthProvider = ({ children }) => {
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        // Simulate auth check delay
-        const timer = setTimeout(() => setLoading(false), 500);
-        return () => clearTimeout(timer);
-    }, []);
-    return (
-        <AuthContext.Provider value={{ user: mockUser, loading }}>
-            {children}
-        </AuthContext.Provider>
-    )
-};
-// --- End Placeholder ---
+import { AuthContext } from '../provider/AuthProvider'; // Import the real AuthContext
 
-
-// --- Data Fetching Functions ---
-const fetchFoodById = async (foodId) => {
-    const { data } = await axios.get(`https://food-server-sooty.vercel.app/food/${foodId}`);
-    return data;
-};
-
+// --- Data Fetching Function (Only for mutation) ---
+// The fetchFoodById function is no longer needed here because the router's loader handles it.
 const requestFood = async ({ foodId, requestData, token }) => {
     const { data } = await axios.patch(`https://food-server-sooty.vercel.app/food/${foodId}`, requestData, {
         headers: { Authorization: `Bearer ${token}` },
@@ -41,12 +15,12 @@ const requestFood = async ({ foodId, requestData, token }) => {
     return data;
 };
 
-
 // --- Main Component ---
 const FoodDetails = () => {
-    const { id } = useParams();
-    // Use the actual AuthContext or the mock if needed
-    const { user, loading: authLoading } = useContext(AuthContext); // Get loading state
+    // ✅ KEY CHANGE: Get the food data directly from the router's loader
+    const food = useLoaderData();
+
+    const { user, loading: authLoading } = useContext(AuthContext);
 
     const queryClient = useQueryClient();
     const ref = useRef(null);
@@ -55,21 +29,13 @@ const FoodDetails = () => {
     const [showModal, setShowModal] = useState(false);
     const [notes, setNotes] = useState("");
 
-    // --- React Query for data fetching ---
-    // **FIX APPLIED HERE**: Add 'enabled' option
-    const { data: food, isLoading: foodLoading, isError, error } = useQuery({
-        queryKey: ['food', id],
-        queryFn: () => fetchFoodById(id),
-        // Only run the query once authentication is no longer loading
-        enabled: !authLoading,
-    });
-
     // --- React Query for data mutation ---
     const mutation = useMutation({
         mutationFn: (requestPayload) => requestFood(requestPayload),
         onSuccess: () => {
             toast.success("Request submitted successfully!");
-            queryClient.invalidateQueries({ queryKey: ['food', id] });
+            // Invalidate the loader data to refetch if needed
+            queryClient.invalidateQueries({ queryKey: ['food'] });
             setShowModal(false);
         },
         onError: (err) => {
@@ -79,8 +45,6 @@ const FoodDetails = () => {
 
     // --- Event Handler ---
     const handleRequestSubmit = () => {
-        // We might not need the user check here anymore if the button is disabled correctly
-        // But it's good practice to keep it.
         if (!user) {
             toast.error("You must be logged in to request food.");
             return;
@@ -88,7 +52,7 @@ const FoodDetails = () => {
 
         mutation.mutate({
             foodId: food._id,
-            token: user.accessToken,
+            token: user.accessToken, // Note: Firebase user object has accessToken
             requestData: {
                 userEmail: user.email,
                 requestDate: new Date().toISOString(),
@@ -98,8 +62,8 @@ const FoodDetails = () => {
     };
 
     // --- Render Logic ---
-    // **FIX APPLIED HERE**: Check authLoading first
-    if (authLoading || foodLoading) {
+    // ✅ KEY CHANGE: Only need to check for authLoading now. The food data is already loaded by the router.
+    if (authLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
                 <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-emerald-500"></div>
@@ -107,18 +71,7 @@ const FoodDetails = () => {
         );
     }
 
-    if (isError) {
-        return (
-            <div className="min-h-screen flex items-center justify-center text-center py-10 text-red-600 dark:text-red-400 bg-gray-50 dark:bg-gray-950">
-                <div>
-                    <h2 className="text-2xl font-bold mb-2">Failed to Load Food Details</h2>
-                    <p>Error: {error.message}</p>
-                </div>
-            </div>
-        );
-    }
-
-    // Check if food data is available after loading states are false
+    // If for some reason the loader returned no data, show a not found page.
     if (!food) {
         return (
             <div className="min-h-screen flex items-center justify-center text-center py-10 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-950">
@@ -130,7 +83,6 @@ const FoodDetails = () => {
         );
     }
 
-
     // Safely access data now that loading is done and food exists
     const donatorName = food.userName || 'Anonymous Donator';
     const donatorImage = food.userImage || `https://i.pravatar.cc/150?u=${food.userEmail}`;
@@ -139,7 +91,6 @@ const FoodDetails = () => {
     const isAvailable = food.status === 'available';
 
     return (
-        // ... rest of the JSX remains the same as the previous correct version ...
         <>
             <div ref={ref} className="bg-white dark:bg-gray-900 py-12 sm:py-20 overflow-hidden">
                 <motion.div
@@ -267,15 +218,4 @@ const FoodDetails = () => {
     );
 };
 
-// Remove the local QueryClientProvider and AuthProvider wrappers if they exist at the root
-// const queryClient = new QueryClient(); // Remove if global
-// const FoodDetails = () => ( // Remove if global
-//     <QueryClientProvider client={queryClient}>
-//         <MockAuthProvider> {/* Use Mock or real AuthProvider as needed */}
-//             <FoodDetailsComponent />
-//         </MockAuthProvider>
-//     </QueryClientProvider>
-// );
-
-export default FoodDetails; // Export the main component directly
-
+export default FoodDetails;

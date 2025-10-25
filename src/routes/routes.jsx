@@ -56,16 +56,14 @@ const router = createBrowserRouter([
         element: (<PrivateRoute>
           <FoodDetails />
         </PrivateRoute>),
-        loader: ({ params }) =>
-          fetch(`https://food-server-sooty.vercel.app/food/${params.id}`)
+        loader: ({ params }) => fetch(`https://food-server-sooty.vercel.app/food/${params.id}`).then(res => res.json())
       },
       {
         path: "/update-food/:id",
         element: (<PrivateRoute>
           <UpdateFood />
         </PrivateRoute>),
-        loader: ({ params }) =>
-          fetch(`https://food-server-sooty.vercel.app/food/${params.id}`)
+        loader: ({ params }) => fetch(`https://food-server-sooty.vercel.app/food/${params.id}`).then(res => res.json())
       },
       {
         path: "/all-food",
@@ -77,7 +75,7 @@ const router = createBrowserRouter([
       {
 
       },
-      
+
     ]
   },
 ]);

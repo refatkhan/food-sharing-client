@@ -1,78 +1,73 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Banner from "../components/Banner";
+
+import Hero from "../components/Hero";
 import FeaturedFoods from "../components/FeaturedFoods";
 import TestimonialSlider from "../components/TestimonialSlider";
-import HowItWorksAndImpact from "../components/HowItWorksAndImpact ";
-import HowItWorks from "../components/HowItWorks";
-import Hero from "../components/Hero";
 import FAQ from "../components/FAQ";
 import GetInvolved from "../components/GetInvolved";
 import CallToAction from "../components/CallToAction";
+import HowItWorks from "../components/HowitWorks";
+import HowItWorksAndImpact from "../components/WorksImpact";
 
 const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0 },
 };
 
+const AnimatedSection = ({ children, delay = 0 }) => (
+    <motion.div
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.25 }} // Triggers when 25% of the section is visible
+        transition={{ duration: 0.6, delay: delay }}
+    >
+        {children}
+    </motion.div>
+);
+
+// --- 2. Your Redesigned Home Component ---
+
 const Home = () => {
     return (
-        <div className="bg-green-100">
-            {/* Banner Section */}
-            <motion.div
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.6 }}
-            >
-                <Hero />
-            </motion.div>
+        // Use <main> for the main content area for better accessibility
+        <main>
+         
 
-            {/* Featured Foods Section */}
-            <motion.div
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-            >
+            <AnimatedSection delay={0}>
+                <Hero />
+            </AnimatedSection>
+
+            <AnimatedSection delay={0.1}>
                 <FeaturedFoods />
-            </motion.div>
-            {/*Impact and works */}
-            <motion.div
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-            >
-                {/* work procedure*/}
-            </motion.div>
-            <motion.div
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-            >
+            </AnimatedSection>
+
+            <AnimatedSection delay={0.2}>
+                <HowItWorks />
+            </AnimatedSection>
+
+            {/* --- FIX 2: Added the missing component here --- */}
+            <AnimatedSection delay={0.2}>
                 <HowItWorksAndImpact />
-            </motion.div>
-            <HowItWorks />
-            {/* Testimonial Slider Section */}
-            <motion.div
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-            >
+            </AnimatedSection>
+
+            <AnimatedSection delay={0.3}>
                 <TestimonialSlider />
-            </motion.div>
-            <FAQ />
-            <GetInvolved />
-            <CallToAction />
-        </div>
+            </AnimatedSection>
+
+            <AnimatedSection delay={0.3}>
+                <FAQ />
+            </AnimatedSection>
+
+            <AnimatedSection delay={0.3}>
+                <GetInvolved />
+            </AnimatedSection>
+
+            <AnimatedSection delay={0.4}>
+                <CallToAction />
+            </AnimatedSection>
+        </main>
     );
 };
 
