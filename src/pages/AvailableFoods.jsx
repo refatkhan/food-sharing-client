@@ -5,15 +5,16 @@ import { Link } from "react-router-dom";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { IoSearchOutline, IoPeopleOutline, IoLocationOutline, IoTimeOutline, IoWarningOutline } from "react-icons/io5";
 
-// Fetcher function for react-query
+// FIX 1: Updated the fetcher to use the correct backend endpoint
 const fetchFoods = async () => {
-    const res = await axios.get("https://food-server-sooty.vercel.app/all-foods");
+    const res = await axios.get("https://food-server-sooty.vercel.app/available-foods");
     return res.data;
 };
 
 // Reusable Food Card Component
 const FoodCard = ({ food }) => {
-    const { _id, foodName, imageUrl, foodQuantity, location, description, userName, userImage, date, status } = food;
+    // FIX 3 (Optional but Recommended): Updated to use 'availability' instead of 'status' for consistency
+    const { _id, foodName, imageUrl, foodQuantity, location, description, userName, userImage, date, availability } = food;
 
     // --- FEATURE: Expiry Date Highlighting Logic ---
     const getExpiryInfo = (expiryDateString) => {
@@ -38,18 +39,14 @@ const FoodCard = ({ food }) => {
             };
         }
 
-        // Normalize dates to compare days (start of day) - FIXED VERSION
-        // Set both dates to midnight in the user's local timezone
         const nowLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const expiryLocal = new Date(expiry.getFullYear(), expiry.getMonth(), expiry.getDate());
 
-        // Calculate the difference in days
         const diffTime = expiryLocal.getTime() - nowLocal.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
         let formattedDate = expiry.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
-        // Case 1: Expired
         if (diffDays < 0) {
             return {
                 text: `Expired on ${formattedDate}`,
@@ -62,7 +59,6 @@ const FoodCard = ({ food }) => {
             };
         }
 
-        // Case 2: Expires Today
         if (diffDays === 0) {
             return {
                 text: `Expires Today`,
@@ -75,7 +71,6 @@ const FoodCard = ({ food }) => {
             };
         }
 
-        // Case 3: Expires Tomorrow
         if (diffDays === 1) {
             return {
                 text: `Expires Tomorrow`,
@@ -88,7 +83,6 @@ const FoodCard = ({ food }) => {
             };
         }
 
-        // Case 4: Expires in 2-3 days (added for better UX)
         if (diffDays <= 3) {
             return {
                 text: `Expires in ${diffDays} days`,
@@ -101,7 +95,6 @@ const FoodCard = ({ food }) => {
             };
         }
 
-        // Default: Expires later
         return {
             text: `Expires: ${formattedDate}`,
             textStyle: 'text-gray-700 dark:text-gray-300',
@@ -141,7 +134,6 @@ const FoodCard = ({ food }) => {
                     </div>
                 </div>
 
-                {/* --- Expiry Badge --- */}
                 {expiryInfo.badge && (
                     <div className={`absolute top-2 left-2 z-10 ${expiryInfo.badge.style}`}>
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
@@ -151,14 +143,14 @@ const FoodCard = ({ food }) => {
                     </div>
                 )}
 
-                {/* Status Badge */}
-                {status && (
+                {/* Status Badge - Updated to use 'availability' */}
+                {availability && (
                     <div className={`absolute top-2 z-10 ${expiryInfo.badge ? 'right-auto left-28' : 'right-2'}`}>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium backdrop-blur-sm ${status === 'available'
-                                ? 'bg-green-100/70 text-green-800 dark:bg-green-900/70 dark:text-green-200'
-                                : 'bg-yellow-100/70 text-yellow-800 dark:bg-yellow-900/70 dark:text-yellow-200'
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium backdrop-blur-sm ${availability === 'available' || availability === 'Available'
+                            ? 'bg-green-100/70 text-green-800 dark:bg-green-900/70 dark:text-green-200'
+                            : 'bg-yellow-100/70 text-yellow-800 dark:bg-yellow-900/70 dark:text-yellow-200'
                             }`}>
-                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                            {availability.charAt(0).toUpperCase() + availability.slice(1)}
                         </span>
                     </div>
                 )}
@@ -210,8 +202,9 @@ const AvailableFoods = () => {
 
     // Memoize filtering and sorting
     const filteredAndSortedFoods = useMemo(() => {
+        // FIX 2: Updated filter to use the 'availability' field from the database
         let processed = foods
-            .filter(food => food.status === 'available')
+            .filter(food => food.availability === 'Available')
             .filter((food) =>
                 food.foodName.toLowerCase().includes(searchText.toLowerCase())
             );
