@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../provider/AuthProvider';
-import { Link, useLoaderData } from 'react-router';
+// 'Link' and 'useLoaderData' should be imported from 'react-router-dom'
+import { Link, useLoaderData } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { IoReturnDownBack } from "react-icons/io5";
 
@@ -8,6 +9,7 @@ const UpdateFood = () => {
     const { user } = useContext(AuthContext);
     const foodData = useLoaderData();
 
+    // --- No logic changed ---
     const {
         _id,
         foodName,
@@ -17,8 +19,8 @@ const UpdateFood = () => {
         expiryDateTime,
         description,
         availability,
-        userEmail,
-        userName,
+        userEmail, // Kept for the form, though user?.email is used
+        userName,   // Kept for the form, though user?.displayName is used
         date,
         time,
     } = foodData;
@@ -46,139 +48,188 @@ const UpdateFood = () => {
             .catch(() => toast.error("Update failed"));
     };
 
+    // Helper for styling form inputs
+    const inputClass = "input input-bordered w-full bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-gray-100";
+    const labelClass = "block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300";
+    const readOnlyClass = "input input-bordered w-full bg-gray-100 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 cursor-not-allowed text-gray-500 dark:text-gray-400";
+
+
     return (
-        <div className="max-w-3xl mx-auto p-6 bg-green-200 rounded-lg shadow-md dark:bg-[#4DA8DA] text-gray-800 dark:text-gray-100">
-            <div className='flex  justify-between items-center'>
-                <h2 className="text-2xl font-bold mb-6 ">Update Food Info</h2>
-                <Link to={"/browse-foods"} className="btn btn-md bg-green-600 text-white hover:bg-green-700 rounded-full">Back <IoReturnDownBack size={20} /> </Link>
-            </div>
-            <form onSubmit={handleUpdate} className="space-y-4">
+        // --- 1. Redesigned Page Container (Matches FAQ width) ---
+        <section className="bg-gray-50 dark:bg-gray-900 py-16 sm:py-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                <div>
-                    <label className="block font-medium mb-1" htmlFor="foodName">Food Name</label>
-                    <input
-                        type="text"
-                        name="foodName"
-                        id="foodName"
-                        defaultValue={foodName}
-                        placeholder="e.g., Rice, Chicken Curry"
-                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
-                        required
-                    />
-                </div>
-
-                <div>
-                    <label className="block font-medium mb-1" htmlFor="location">Pick-Up Location</label>
-                    <input
-                        type="text"
-                        name="location"
-                        id="location"
-                        placeholder="City, Area"
-                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
-                        defaultValue={location}
-                        required
-                    />
-                </div>
-
-                <div>
-                    <label className="block font-medium mb-1" htmlFor="foodQuantity">Food Quantity</label>
-                    <input
-                        type="number"
-                        name="foodQuantity"
-                        id="foodQuantity"
-                        placeholder="Enter amount in number"
-                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
-                        defaultValue={foodQuantity}
-                        required
-                    />
-                </div>
-
-                <div>
-                    <label className="block font-medium mb-1" htmlFor="expiryDateTime">Expiry Date & Time</label>
-                    <input
-                        type="datetime-local"
-                        name="expiryDateTime"
-                        id="expiryDateTime"
-                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
-                        defaultValue={expiryDateTime ? expiryDateTime.slice(0, 16) : ''}
-                        required
-                    />
-                </div>
-
-                <div>
-                    <label className="block font-medium mb-1" htmlFor="description">Additional Notes</label>
-                    <textarea
-                        name="description"
-                        id="description"
-                        placeholder="Add description about food"
-                        className="textarea textarea-bordered w-full"
-                        defaultValue={description}
-                        required
-                    ></textarea>
-                </div>
-
-                <div>
-                    <label className="block font-medium mb-1" htmlFor="availability">Food Status</label>
-                    <select
-                        name="availability"
-                        id="availability"
-                        className="select select-bordered w-full"
-                        defaultValue={availability}
-                        required
+                {/* --- Page Header --- */}
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
+                    <div>
+                        <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white tracking-tight">
+                            Update Your Food Listing
+                        </h2>
+                        <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">
+                            Make changes to your shared item below.
+                        </p>
+                    </div>
+                    <Link
+                        to={"/manage-foods"} // Assuming this should be /manage-my-foods
+                        className="btn btn-outline btn-neutral dark:btn-ghost dark:border-gray-600 rounded-lg group"
                     >
-                        <option disabled>Select availability</option>
-                        <option>Available</option>
-                        <option>Not Available</option>
-                    </select>
+                        <IoReturnDownBack size={20} className="transition-transform group-hover:-translate-x-1" />
+                        Back to My Foods
+                    </Link>
                 </div>
 
-                <div>
-                    <label className="block font-medium mb-1" htmlFor="imageUrl">Image URL</label>
-                    <input
-                        type="text"
-                        name="imageUrl"
-                        id="imageUrl"
-                        placeholder="https://example.com/image.jpg"
-                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
-                        defaultValue={imageUrl}
-                        required
-                    />
-                </div>
+                {/* --- 2. Two-Panel Layout --- */}
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 xl:gap-12">
 
-                <div>
-                    <label className="block font-medium mb-1" htmlFor="userEmail">Your Email</label>
-                    <input
-                        type="email"
-                        name="userEmail"
-                        id="userEmail"
-                        value={user?.email}
-                        readOnly
-                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
-                    />
-                </div>
+                    {/* --- Left Panel: Preview & Info --- */}
+                    <div className="lg:col-span-2">
+                        <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Current Listing</h3>
 
-                <div>
-                    <label className="block font-medium mb-1" htmlFor="userName">Your Name</label>
-                    <input
-                        type="text"
-                        name="userName"
-                        id="userName"
-                        value={user?.displayName}
-                        readOnly
-                        className="input input-bordered w-full  bg-white text-gray-800 dark:text-gray-100"
-                    />
-                </div>
+                        {/* Image Preview */}
+                        <div className="mb-6 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+                            <img
+                                src={imageUrl || 'https://i.imgur.com/gJt6gq0.png'} // Fallback image
+                                alt={foodName || "Food image"}
+                                className="w-full h-64 object-cover rounded-lg"
+                            />
+                        </div>
 
-                {/* You can optionally show date/time if needed */}
-                <div className="text-gray-600 text-sm">
-                    <p>Added on: {date} at {time}</p>
-                </div>
+                        {/* Donor Info Card */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 space-y-4">
+                            <h4 className="text-lg font-semibold text-gray-700 dark:text-gray-200">Donor Information</h4>
+                            <div>
+                                <label className={labelClass} htmlFor="userName">Your Name</label>
+                                <input
+                                    type="text"
+                                    name="userName"
+                                    id="userName"
+                                    value={userName || ''}
+                                    readOnly
+                                    className={readOnlyClass}
+                                />
+                            </div>
+                            <div>
+                                <label className={labelClass} htmlFor="userEmail">Your Email</label>
+                                <input
+                                    type="email"
+                                    name="userEmail"
+                                    id="userEmail"
+                                    value={user?.email || ''}
+                                    readOnly
+                                    className={readOnlyClass}
+                                />
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 pt-2">
+                                Added on: {date} at {time}
+                            </p>
+                        </div>
+                    </div>
 
-                <button type="submit" className="btn bg-green-800 text-white w-full mt-4">
-                    Update Food
-                </button>
-            </form>
-        </div>
+                    {/* --- Right Panel: Edit Form --- */}
+                    <div className="lg:col-span-3">
+                        <form
+                            onSubmit={handleUpdate}
+                            className="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700"
+                        >
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label className={labelClass} htmlFor="foodName">Food Name</label>
+                                    <input
+                                        type="text"
+                                        name="foodName"
+                                        id="foodName"
+                                        defaultValue={foodName}
+                                        placeholder="e.g., Rice, Chicken Curry"
+                                        className={inputClass}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelClass} htmlFor="location">Pick-Up Location</label>
+                                    <input
+                                        type="text"
+                                        name="location"
+                                        id="location"
+                                        placeholder="City, Area"
+                                        className={inputClass}
+                                        defaultValue={location}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelClass} htmlFor="foodQuantity">Food Quantity (servings)</label>
+                                    <input
+                                        type="number"
+                                        name="foodQuantity"
+                                        id="foodQuantity"
+                                        placeholder="e.g., 2"
+                                        className={inputClass}
+                                        defaultValue={foodQuantity}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelClass} htmlFor="expiryDateTime">Expiry Date & Time</label>
+                                    <input
+                                        type="datetime-local"
+                                        name="expiryDateTime"
+                                        id="expiryDateTime"
+                                        className={inputClass}
+                                        defaultValue={expiryDateTime ? expiryDateTime.slice(0, 16) : ''}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            {/* --- Full-width fields --- */}
+                            <div className="space-y-6 mt-6">
+                                <div>
+                                    <label className={labelClass} htmlFor="imageUrl">Image URL</label>
+                                    <input
+                                        type="text"
+                                        name="imageUrl"
+                                        id="imageUrl"
+                                        placeholder="https://example.com/image.jpg"
+                                        className={inputClass}
+                                        defaultValue={imageUrl}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className={labelClass} htmlFor="availability">Food Status</label>
+                                    <select
+                                        name="availability"
+                                        id="availability"
+                                        className="select select-bordered w-full bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+                                        defaultValue={availability}
+                                        required
+                                    >
+                                        <option>Available</option>
+                                        <option>Not Available</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className={labelClass} htmlFor="description">Additional Notes</label>
+                                    <textarea
+                                        name="description"
+                                        id="description"
+                                        placeholder="e.g., 'Slightly spicy', 'Contains nuts'"
+                                        className="textarea textarea-bordered w-full h-24 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+                                        defaultValue={description}
+                                        required
+                                    ></textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" className="btn btn-primary bg-emerald-600 hover:bg-emerald-700 text-white w-full mt-8 rounded-lg">
+                                Update Food
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </section>
     );
 };
 

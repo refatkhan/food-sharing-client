@@ -1,13 +1,12 @@
 import React, { useState, useContext, useRef } from 'react';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigation } from 'react-router-dom'; // 1. Import useNavigation
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { AuthContext } from '../provider/AuthProvider'; // Import the real AuthContext
+import { AuthContext } from '../provider/AuthProvider';
 
 // --- Data Fetching Function (Only for mutation) ---
-// The fetchFoodById function is no longer needed here because the router's loader handles it.
 const requestFood = async ({ foodId, requestData, token }) => {
     const { data } = await axios.patch(`https://food-server-sooty.vercel.app/food/${foodId}`, requestData, {
         headers: { Authorization: `Bearer ${token}` },
@@ -17,10 +16,9 @@ const requestFood = async ({ foodId, requestData, token }) => {
 
 // --- Main Component ---
 const FoodDetails = () => {
-    // ✅ KEY CHANGE: Get the food data directly from the router's loader
     const food = useLoaderData();
-
     const { user, loading: authLoading } = useContext(AuthContext);
+    const navigation = useNavigation(); // 2. Get the navigation object
 
     const queryClient = useQueryClient();
     const ref = useRef(null);
@@ -34,9 +32,9 @@ const FoodDetails = () => {
         mutationFn: (requestPayload) => requestFood(requestPayload),
         onSuccess: () => {
             toast.success("Request submitted successfully!");
-            // Invalidate the loader data to refetch if needed
-            queryClient.invalidateQueries({ queryKey: ['food'] });
             setShowModal(false);
+            // 3. KEY FIX: Reload the page to fetch fresh data from the loader
+            navigation.reload();
         },
         onError: (err) => {
             toast.error(err.response?.data?.message || "Request failed. Please try again.");
@@ -49,10 +47,9 @@ const FoodDetails = () => {
             toast.error("You must be logged in to request food.");
             return;
         }
-
         mutation.mutate({
             foodId: food._id,
-            token: user.accessToken, // Note: Firebase user object has accessToken
+            token: user.accessToken,
             requestData: {
                 userEmail: user.email,
                 requestDate: new Date().toISOString(),
@@ -62,7 +59,6 @@ const FoodDetails = () => {
     };
 
     // --- Render Logic ---
-    // ✅ KEY CHANGE: Only need to check for authLoading now. The food data is already loaded by the router.
     if (authLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
@@ -71,7 +67,6 @@ const FoodDetails = () => {
         );
     }
 
-    // If for some reason the loader returned no data, show a not found page.
     if (!food) {
         return (
             <div className="min-h-screen flex items-center justify-center text-center py-10 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-950">
@@ -83,12 +78,30 @@ const FoodDetails = () => {
         );
     }
 
-    // Safely access data now that loading is done and food exists
+    // --- 4. KEY FIX: Updated Button Logic ---
     const donatorName = food.userName || 'Anonymous Donator';
     const donatorImage = food.userImage || `https://i.pravatar.cc/150?u=${food.userEmail}`;
     const isOwner = user?.email === food.userEmail;
-    const statusText = food.status ? food.status.charAt(0).toUpperCase() + food.status.slice(1) : 'Unknown';
-    const isAvailable = food.status === 'available';
+    const isGloballyAvailable = food.availability === 'Available';
+
+    // Check if the current user is the one who requested this food
+    const isRequestedByCurrentUser = food.requestInfo?.userEmail === user?.email;
+
+    // Determine the button's disabled state and text
+    let buttonText = "Request This Food";
+    let isButtonDisabled = false;
+
+    if (isOwner) {
+        buttonText = "This is your post";
+        isButtonDisabled = true;
+    } else if (!isGloballyAvailable) {
+        isButtonDisabled = true;
+        if (isRequestedByCurrentUser) {
+            buttonText = "You Already Requested This";
+        } else {
+            buttonText = "Already Requested";
+        }
+    }
 
     return (
         <>
@@ -127,7 +140,7 @@ const FoodDetails = () => {
                             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-lg">
                                 <div className="flex items-center text-gray-700 dark:text-gray-300">
                                     <span className="w-8 h-8 mr-3 text-emerald-500"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Zm0-2a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm-1-6h2v-2h-2v2Zm0-4h2V6h-2v4Z" /></svg></span>
-                                    <div><strong>Status:</strong><span className={`ml-2 font-semibold ${isAvailable ? 'text-green-500' : 'text-yellow-500'}`}>{statusText}</span></div>
+                                    <div><strong>Status:</strong><span className={`ml-2 font-semibold ${isGloballyAvailable ? 'text-green-500' : 'text-yellow-500'}`}>{isGloballyAvailable ? 'Available' : 'Requested'}</span></div>
                                 </div>
                                 <div className="flex items-center text-gray-700 dark:text-gray-300">
                                     <span className="w-8 h-8 mr-3 text-emerald-500"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8a8 8 0 0 1-8 8Zm1-12h-2v4h4v-2h-2Z" /></svg></span>
@@ -153,10 +166,10 @@ const FoodDetails = () => {
                                     onClick={() => setShowModal(true)}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
-                                    disabled={!isAvailable || isOwner}
+                                    disabled={isButtonDisabled} // 5. Use the new disabled state
                                     className="w-full px-8 py-4 text-lg font-semibold text-white bg-emerald-600 rounded-lg shadow-lg hover:bg-emerald-700 focus:ring-4 focus:outline-none focus:ring-emerald-300 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none"
                                 >
-                                    {isOwner ? "This is your post" : (isAvailable ? "Request This Food" : "Already Requested")}
+                                    {buttonText} {/* 6. Use the new dynamic text */}
                                 </motion.button>
                             </div>
                         </motion.div>

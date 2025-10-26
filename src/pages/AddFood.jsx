@@ -33,7 +33,7 @@ const AddFood = () => {
 
         // Add timestamps and status
         foodData.createdAt = new Date().toISOString();
-        foodData.status = 'available'; // Set initial status
+        foodData.availability = 'Available'; 
 
         // Convert foodQuantity to number if needed by backend
         foodData.foodQuantity = Number(foodData.foodQuantity); 
