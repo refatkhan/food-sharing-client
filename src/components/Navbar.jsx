@@ -45,7 +45,7 @@ const Navbar = () => {
   const navLinks = (
     <>
       <li><NavLink to="/" className={navLinkClass}>Home</NavLink></li>
-      <li><a href="#about" className="text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-green-100 dark:hover:bg-gray-700 transition-colors duration-300">About Us</a></li>
+      <li><NavLink to="/all-food" className="text-gray-600 dark:text-gray-300 font-medium px-4 py-2 rounded-lg hover:bg-green-100 dark:hover:bg-gray-700 transition-colors duration-300">All Foods</NavLink></li>
       <li><NavLink to="/available-foods" className={navLinkClass}>Available Foods</NavLink></li>
       {user && (
         <>

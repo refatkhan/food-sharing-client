@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../provider/AuthProvider";
 import { Link } from "react-router";
+import Swal from 'sweetalert2';
 const ManageMyFoods = () => {
     const { user } = useContext(AuthContext);
     const [myFoods, setMyFoods] = useState([]);
@@ -24,22 +25,45 @@ const ManageMyFoods = () => {
 
 
     const handleDelete = (id) => {
-        if (!window.confirm("Are you sure you want to delete this food?")) return;
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios
+                    .delete(`https://food-server-sooty.vercel.app/food/${id}`)
+                    .then((res) => {
+                        if (res.data.deletedCount > 0) {
 
-        axios
-            .delete(`https://food-server-sooty.vercel.app/food/${id}`)
-            .then((res) => {
-                if (res.data.deletedCount > 0) {
-                    alert("Food deleted successfully.");
-                    setMyFoods((prevFoods) => prevFoods.filter((food) => food._id !== id));
-                } else {
-                    alert("Failed to delete the food.");
-                }
-            })
-            .catch((err) => {
-                console.error("Error deleting food:", err);
-                alert("Something went wrong while deleting.");
-            });
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Your food listing has been deleted.",
+                                icon: "success"
+                            });
+                            setMyFoods((prevFoods) => prevFoods.filter((food) => food._id !== id));
+                        } else {
+                            Swal.fire({
+                                title: "Failed",
+                                text: "Failed to delete the food.",
+                                icon: "error"
+                            });
+                        }
+                    })
+                    .catch((err) => {
+                        console.error("Error deleting food:", err);
+                        Swal.fire({
+                            title: "Error!",
+                            text: "Something went wrong while deleting.",
+                            icon: "error"
+                        });
+                    });
+            }
+        });
     };
 
     if (loading) {
