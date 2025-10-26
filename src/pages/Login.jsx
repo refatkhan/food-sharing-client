@@ -6,8 +6,8 @@ import { AuthContext } from '../provider/AuthProvider'; // Ensure this path is c
 import { motion } from 'framer-motion';
 
 // --- DEMO USER CREDENTIALS ---
-const DEMO_EMAIL = "your_demo_email@example.com"; // <-- REPLACE
-const DEMO_PASSWORD = "your_demo_password"; // <-- REPLACE
+const DEMO_EMAIL = "demo@foodshare.com"; 
+const DEMO_PASSWORD = "Nais@123"; // 
 
 const Login = () => {
     // --- Existing Logic ---

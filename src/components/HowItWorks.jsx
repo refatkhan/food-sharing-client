@@ -7,10 +7,12 @@ const steps = [
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M16 21v-2a4 4 0 0 0-8 0v2" />
                 <circle cx="12" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M2 21v-2a4 4 0 0 1 3-3.87" />
             </svg>
         ),
-        title: "1. Create Account",
-        description: "Join our community with a quick and easy sign-up process.",
+        title: "Create Your Account",
+        description: "Quickly sign up or log in to join our community of food sharers and receivers.",
     },
     {
         icon: (
@@ -20,8 +22,8 @@ const steps = [
                 <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
         ),
-        title: "2. Share or Find",
-        description: "Post surplus food or browse listings available near you.",
+        title: "Share or Find Food",
+        description: "Easily post your surplus food with details and photos, or browse available local listings.",
     },
     {
         icon: (
@@ -30,8 +32,8 @@ const steps = [
                 <path d="M3 22h18" />
             </svg>
         ),
-        title: "3. Arrange Pickup",
-        description: "Connect securely to coordinate a convenient and safe exchange.",
+        title: "Arrange Pickup",
+        description: "Use our secure platform to connect with others and coordinate a safe and convenient pickup.",
     },
     {
         icon: (
@@ -40,8 +42,8 @@ const steps = [
                 <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a2 2 0 0 1 1.79 1.11L15 5.88Z" />
             </svg>
         ),
-        title: "4. Make a Difference",
-        description: "Feel great knowing you've helped reduce waste and support a neighbor.",
+        title: "Make a Difference",
+        description: "Enjoy your meal or the satisfaction of helping, knowing you've reduced food waste.",
     },
 ];
 
@@ -54,105 +56,82 @@ export default function HowItWorks() {
         hidden: {},
         visible: {
             transition: {
-                staggerChildren: 0.2, // Stagger the children
+                staggerChildren: 0.15, // Stagger the children cards
+                delayChildren: 0.2, // Small delay before starting
             }
         }
     };
 
-    // Variants for side columns (left and right)
-    const leftVariants = {
-        hidden: { opacity: 0, x: -30 },
-        visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
-    };
-
-    const rightVariants = {
-        hidden: { opacity: 0, x: 30 },
-        visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
-    };
-
-    // Variants for the phone
-    const phoneVariants = {
-        hidden: { opacity: 0, scale: 0.9 },
-        visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut" } }
+    // Variants for each card
+    const cardVariants = {
+        hidden: { opacity: 0, y: 30 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
     };
 
     return (
-        <section className="bg-white dark:bg-gray-900 py-20 sm:py-28">
+        // Section using standard background and padding
+        <section id="works" ref={ref} className="bg-gray-50 dark:bg-gray-900/50 py-20 sm:py-28">
+            {/* Max-width container for alignment */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section Header */}
                 <motion.div
-                    ref={ref}
                     initial={{ opacity: 0, y: 20 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.7, ease: "easeOut" }}
-                    className="text-center mb-16 lg:mb-24"
+                    className="text-center mb-16"
                 >
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 dark:text-white tracking-tight">
-                        How Our Platform Works
+                        Get Started in <span className="text-emerald-500">4 Easy Steps</span>
                     </h2>
                     <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-300">
-                        We've designed a simple and intuitive process to connect those with surplus food to those who need it.
+                        Joining our food sharing community is simple, fast, and rewarding. Here’s how you can start making an impact today.
                     </p>
                 </motion.div>
 
+                {/* Container for the steps and connecting line */}
                 <motion.div
                     variants={containerVariants}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
-                    className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-0"
+                    className="relative" // Relative positioning for the absolute line
                 >
-                    {/* Left Steps */}
-                    <motion.div variants={leftVariants} className="w-full lg:w-1/3 space-y-8">
-                        {steps.slice(0, 2).map((step, i) => (
-                            <div key={i} className="flex items-start gap-4 lg:justify-end">
-                                <div className="lg:text-right">
-                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{step.title}</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">{step.description}</p>
-                                </div>
-                                <div className="flex-shrink-0 w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center">
-                                    {step.icon}
-                                </div>
-                            </div>
-                        ))}
-                    </motion.div>
+                    {/* The connecting line - visible on larger screens */}
+                    <div className="hidden lg:block absolute top-10 left-0 w-full h-0.5 bg-gray-200 dark:bg-gray-700/60"></div>
+                    {/* Gradient overlay for effect */}
+                    <div className="hidden lg:block absolute top-10 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-300 dark:via-emerald-700 to-transparent"></div>
 
-                    {/* Phone Mockup */}
-                    <motion.div variants={phoneVariants} className="w-full max-w-xs lg:w-1/3 px-4">
-                        <div className="relative mx-auto border-gray-800 dark:border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-2xl">
-                            <div className="w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute"></div>
-                            <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[124px] rounded-s-lg"></div>
-                            <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[178px] rounded-s-lg"></div>
-                            <div className="h-[64px] w-[3px] bg-gray-800 absolute -end-[17px] top-[142px] rounded-e-lg"></div>
-                            <div className="rounded-[2rem] overflow-hidden w-full h-full bg-emerald-50 dark:bg-gray-800">
-                                <div className="w-full h-full flex flex-col items-center justify-center p-4">
-                                    <svg className="w-24 h-24 text-emerald-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25a2.25 2.25 0 01-2.25 2.25H5.25a2.25 2.25 0 01-2.25-2.25v-8.25M12 4.875A2.625 2.625 0 1012 10.125 2.625 2.625 0 0012 4.875z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 10.125V19.5m-8.25-9.375h16.5" />
-                                    </svg>
-                                    <h3 className="text-xl font-bold text-gray-800 dark:text-white">SharePlate</h3>
-                                    <p className="text-center text-gray-600 dark:text-gray-400 mt-2">Connecting Communities, Reducing Waste</p>
+                    {/* Grid layout for the step cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-8 relative"> {/* Ensure grid is relative */}
+                        {steps.map((step, i) => (
+                            <motion.div
+                                key={i}
+                                variants={cardVariants}
+                                // Card styling
+                                className="flex flex-col items-center text-center p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700/60 transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 relative z-10" // Added z-10 to keep cards above line
+                            >
+                                {/* Icon and Number Container */}
+                                <div className="relative mb-6">
+                                    {/* Outer Circle */}
+                                    <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center ring-4 ring-white dark:ring-gray-800">
+                                        {/* Inner Circle */}
+                                        <div className="w-16 h-16 bg-emerald-200 dark:bg-emerald-900 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                                            {/* Icon */}
+                                            {step.icon}
+                                        </div>
+                                    </div>
+                                    {/* Number Badge */}
+                                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gray-800 dark:bg-white text-white dark:text-gray-900 rounded-full flex items-center justify-center text-sm font-bold border-4 border-white dark:border-gray-800">
+                                        {i + 1}
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </motion.div>
-
-                    {/* Right Steps */}
-                    <motion.div variants={rightVariants} className="w-full lg:w-1/3 space-y-8">
-                        {steps.slice(2, 4).map((step, i) => (
-                            <div key={i} className="flex items-start gap-4">
-                                <div className="flex-shrink-0 w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center">
-                                    {step.icon}
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{step.title}</h3>
-                                    <p className="text-gray-600 dark:text-gray-400">{step.description}</p>
-                                </div>
-                            </div>
+                                {/* Text Content */}
+                                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{step.title}</h3>
+                                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed flex-grow">{step.description}</p>
+                            </motion.div>
                         ))}
-                    </motion.div>
+                    </div>
                 </motion.div>
             </div>
         </section>
     );
 }
-

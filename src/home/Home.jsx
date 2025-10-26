@@ -9,6 +9,7 @@ import GetInvolved from "../components/GetInvolved";
 import CallToAction from "../components/CallToAction";
 import HowItWorks from "../components/HowitWorks";
 import HowItWorksAndImpact from "../components/WorksImpact";
+import AboutUs from "../components/AboutUs";
 
 const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -62,6 +63,9 @@ const Home = () => {
 
             <AnimatedSection delay={0.3}>
                 <GetInvolved />
+            </AnimatedSection>
+            <AnimatedSection delay={0.3}>
+                <AboutUs/>
             </AnimatedSection>
 
             <AnimatedSection delay={0.4}>
